@@ -1,6 +1,6 @@
 
 import math
-
+import weather_data.soldata as soldata
 import crops as crops
 
 
@@ -15,7 +15,7 @@ class Context:
 
     # Timing Constants
     tick = .1
-    ticksPerMinute = 2
+    ticksPerMinute = 1
     ticksPerHour = 120
     ticksPerDay = 2880
     minuteIncrement = 10
@@ -34,17 +34,45 @@ class Context:
     click_regions = []
 
 
-   
-    current_env = {'temp': 0, 'pressure': 0, 'uv': 'Low', 'sunrise': 540, 'sunset': 1440}
+    sol_data = soldata.getAggregatedSolData()
+
+    current_env = soldata.getRandomizedSolData(0, sol_data)
+
+    tickCounter = 0
+    yearNum = 1
+    solNum = 1
+    hourNum = 0
+    minNum = 0
+
+    def next_tick(self):
+        self.tickCounter += 1
+        if self.tickCounter == Context.ticksPerMinute:
+            self.tickCounter = 0
+            self.minNum += 1
+
+        if self.minNum == Context.minPerHour:
+            self.minNum = 0
+            self.hourNum += 1
+
+        if self.hourNum == Context.hourPerSol:
+            self.hourNum = 0
+            self.increment_sol()
+
+
+
+
+
 
     def get_temp(self):
-        return self.current_env['temp']
+        if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
+            return self.current_env['min_temp']
+        return self.current_env['max_temp']
     
     def get_pressure(self):
         return self.current_env['pressure']
     
     def get_uv(self):
-        return self.current_env['uv']
+        return self.current_env['uv_index']
     
     def get_sunrise(self):
         return self._format_time(self.current_env['sunrise'])
@@ -92,3 +120,15 @@ class Context:
 
     def append_click_region(self, x, y, width, height, str):
         self.click_regions.append({'x':x, 'y':y, 'width':width, 'height':height, 'desc': str})
+    
+    def increment_sol(self):
+        
+        if self.solNum == Context.solPerYear:
+            self.solNum = 1
+            self.yearNum += 1
+        
+        self.current_env = soldata.getRandomizedSolData(self.solNum - 1, self.sol_data)
+
+    def get_time_string(self):
+        return f"Year {self.yearNum}, Sol {self.solNum}        {str(self.hourNum).zfill(2)}:{str(self.minNum - self.minNum % Context.minuteIncrement).zfill(2)}"
+
