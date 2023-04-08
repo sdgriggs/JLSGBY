@@ -2,6 +2,7 @@ import pygame
 import pygame.locals
 from Context import Context
 import time
+import weather_data.soldata
 
 
 autoIncrement = 0 #(dummy value, will be calculated in increment function)
@@ -32,13 +33,8 @@ if __name__ == '__main__':
     pygame.display.set_caption("Marmer")
     clock = pygame.time.Clock()
     running = True
-    c = 0
 
-    tickCounter = 0
-    yearNum = 1
-    solNum = 1
-    hourNum = 0
-    minNum = 0
+
 
     screen.fill((0,0,0))
     clock = pygame.time.Clock()
@@ -47,6 +43,7 @@ if __name__ == '__main__':
     smallfont = pygame.font.SysFont('Corbel',35)
 
     context = Context()
+    this_sol_data = {}
 
     while running:
 
@@ -54,24 +51,9 @@ if __name__ == '__main__':
 
         # Update clock
 
-        tickCounter += 1
-        if tickCounter == Context.ticksPerMinute:
-            tickCounter = 0
-            minNum += 1
+        context.next_tick()
 
-        if minNum == Context.minPerHour:
-            minNum = 0
-            hourNum += 1
 
-        if hourNum == Context.hourPerSol:
-            hourNum = 0
-            solNum += 1
-
-        if solNum == Context.solPerYear:
-            solNum = 1
-            yearNum += 1
-
-        timeString = f"Year {yearNum}, Sol {solNum}        {str(hourNum).zfill(2)}:{str(minNum - minNum % Context.minuteIncrement).zfill(2)}"
 
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
@@ -80,12 +62,12 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 context._handle_click_event(event, pygame.mouse.get_pos())
-
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(pygame.Color(240,231,231))
         
 
         # RENDER YOUR GAME HERE
+
 
         #Right information pannel
         right_pannel_width = infoObject.current_w /4 
@@ -129,7 +111,7 @@ if __name__ == '__main__':
         drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
         drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
         drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
-        drawText(timeString, Context.white, bgc, 25, 40, 20)
+        drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
 
 
 
