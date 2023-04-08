@@ -6,7 +6,7 @@ import crops as crops
 
 class Context:
     # Resource Counters
-    food = 0
+    food = 50
 
     #......
     # probably some crop names here
@@ -53,6 +53,7 @@ class Context:
     def get_sunset(self):
         return self._format_time(self.current_env['sunset'])
 
+
     def _format_time(self, min_since_midnight):
         hr = str(math.floor(min_since_midnight / 60))
         min = str(math.floor(min_since_midnight % 60))
@@ -72,20 +73,42 @@ class Context:
         crops.cashcow()
     ]
 
-    # define plant names
-    cropNames = []
+    cropDict = {}
 
-    for cropType in crops:
-        cropNames.append(cropType.name)
+    for crop in crops:
+        cropDict.update({crop.name: crop})
+
+    def doTickUpdate(self):
+        gainedFood = 0
+        for crop in self.crops:
+            gainedFood += crop.getFoodPerTick(self.current_env['temp'], self.current_env['uv'])
+
+        self.food += gainedFood
 
 
     def _handle_click_event(self, event, mouse):
+
         for region in self.click_regions:
             #print(region['desc'])
             #print(region['x'] <= mouse[0] <= region['x'] + region['width'])
             #print(region['y'] <= mouse[0] <= region['y'] + region['height'])
             if region['x'] <= mouse[0] <= region['x'] + region['width'] and region['y'] <= mouse[1] <= region['y'] + region['height']:
-                print(region['desc'])
+
+                command = region['desc'].split('-')
+
+                crop = self.cropDict[command[0]]
+
+                if command[1] == "sell":
+                    if crop.sellPlant():
+                        self.food += crop.sellValue
+
+                elif command[1] == "buy":
+                    if self.food >= crop.buyValue:
+                        crop.addPlant()
+                        self.food -= crop.buyValue
+
+                else:
+                    print(command[1])
 
     def init_click_regions(self):
         self.click_regions = []

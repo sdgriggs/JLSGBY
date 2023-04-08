@@ -4,7 +4,7 @@ from Context import Context
 import time
 
 
-autoIncrement = .1 #(dummy value, will be calculated in increment function)
+autoIncrement = 0 #(dummy value, will be calculated in increment function)
 
 def autominer():
     global autoIncrement
@@ -73,6 +73,8 @@ if __name__ == '__main__':
 
         timeString = f"Year {yearNum}, Sol {solNum}        {str(hourNum).zfill(2)}:{str(minNum - minNum % Context.minuteIncrement).zfill(2)}"
 
+        context.doTickUpdate()
+
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
@@ -86,12 +88,6 @@ if __name__ == '__main__':
         
 
         # RENDER YOUR GAME HERE
-        pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
-
-        drawText("you have " + str(f'{Context.food:.2f}') + " food", Context.black, Context.white, 100, 50, 20)
-        drawText(timeString, Context.black, Context.white, 100, 100, 20)
-
-
 
         #Right information pannel
         right_pannel_width = infoObject.current_w /4 
@@ -102,8 +98,8 @@ if __name__ == '__main__':
         pygame.draw.rect(screen, pygame.Color(193,168,14), pygame.Rect(0, 0, left_pannel_width, infoObject.current_h))
         #Allocate the areas where clicks are valid
         context.init_click_regions()
-        for i in range(0, len(context.cropNames)):
-            b = context.cropNames[i]
+        for i in range(0, len(context.crops)):
+            b = context.crops[i].name
             text = smallfont.render(b, True, 'black')
             rect = text.get_rect()
             rect.x = 100
@@ -119,14 +115,17 @@ if __name__ == '__main__':
             pygame.draw.rect(screen, pygame.Color(255, 0, 0), rect, border_radius=25)
             context.append_click_region(rect.x, rect.y, rect.width, rect.height, b  + "-sell")
 
+        pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
+        #drawText("you have " + str(f'{Context.food:.2f}') + " food", Context.black, Context.white, 500, 300, 20)
+        #drawText(timeString, Context.black, Context.white, 500, 400, 20)
 
 
         #TOP Status Bar
         bgc = pygame.Color(69,24,4)
         pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100), border_bottom_left_radius=25, border_bottom_right_radius=25)
 
-        drawText("Avaliable Food: " + str(f'{Context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
+        drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
         drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
         drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
         drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)

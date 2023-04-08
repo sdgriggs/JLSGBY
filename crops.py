@@ -33,7 +33,7 @@ class Crop:
         if not self.safeUvLevels[uvLevel]:
             valuePercent -= .5
 
-        return self.quantity * self.foodPerTickPerPlant * valuePercent
+        return self.quantity * self.foodPerHourPerPlant * valuePercent
     
     # Returns a brief string description for the crop.
     def getDescription(self):
