@@ -87,22 +87,28 @@ if __name__ == '__main__':
 
         # RENDER YOUR GAME HERE
 
+        #Left information pannel
+        left_pannel_width = infoObject.current_w /4 * 3
+        #pygame.draw.rect(screen, pygame.Color(193,168,14), pygame.Rect(0, 0, left_pannel_width, infoObject.current_h))
+        img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert()
+        img_rect = img.get_rect()
+
+        screen.blit(img, img_rect)
+
+
         #Right information pannel
         right_pannel_width = infoObject.current_w /4 
         pygame.draw.rect(screen, pygame.Color(253,166,0), pygame.Rect(infoObject.current_w - right_pannel_width, 0, right_pannel_width, infoObject.current_h))
 
-        #Left information pannel
-        left_pannel_width = infoObject.current_w /4 * 3
-        pygame.draw.rect(screen, pygame.Color(193,168,14), pygame.Rect(0, 0, left_pannel_width, infoObject.current_h))
         #Allocate the areas where clicks are valid
         context.init_click_regions()
         for i in range(0, len(context.crops)):
             b = context.crops[i].name
-            text = smallfont.render(b + f"({context.crops[i].quantity})", True, 'black')
+            text = smallfont.render(b + f"({context.crops[i].quantity})", True, 'white', None)
             rect = text.get_rect()
             rect.x = 100
             rect.y = 100 * i + 200
-            pygame.draw.rect(screen, pygame.Color(193, 168, 14), rect)
+            #pygame.draw.rect(screen, pygame.Color(193, 168, 14), rect)
             screen.blit(text, rect)
             rect.x = rect.topright[0]
             rect.width = 50
@@ -121,15 +127,15 @@ if __name__ == '__main__':
 
         #TOP Status Bar
         bgc = pygame.Color(69,24,4)
-        pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100), border_bottom_left_radius=25, border_bottom_right_radius=25)
+        pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100))
 
-        drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
-        drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
-        drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
-        drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
-        drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
-        drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
-        drawText(timeString, Context.white, bgc, 25, 40, 20)
+        drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, None, 850, 15, 20)
+        drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, None, 500, 65, 20)
+        drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, None, 500, 15, 20)
+        drawText(f"Current UV index: {context.get_uv()} ", Context.white, None, 850, 65, 20)
+        drawText(f"Sunrise: {context.get_sunrise()}", Context.white, None, 300, 15, 20)
+        drawText(f"Sunset: {context.get_sunset()}", Context.white, None, 300, 65, 20)
+        drawText(timeString, Context.white, None, 25, 40, 20)
 
 
 
