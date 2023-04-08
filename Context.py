@@ -33,11 +33,24 @@ class Context:
               "Plant 3",]
     
 
+    temp = -18
+
+    pressure = 800
+
+    uv = "Medium"
+
+    sunrise = '08:25'
+
+    sunset = '22:19'
+
 
     def _handle_click_event(self, event, mouse):
-        #for region in self.click_regions:
-        #    if 
-        pass
+        for region in self.click_regions:
+            #print(region['desc'])
+            #print(region['x'] <= mouse[0] <= region['x'] + region['width'])
+            #print(region['y'] <= mouse[0] <= region['y'] + region['height'])
+            if region['x'] <= mouse[0] <= region['x'] + region['width'] and region['y'] <= mouse[1] <= region['y'] + region['height']:
+                print(region['desc'])
 
     def init_click_regions(self):
         self.click_regions = []
