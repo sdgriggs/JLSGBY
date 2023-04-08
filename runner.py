@@ -17,7 +17,7 @@ def drawText(text, textColor, bgColor, x, y, fsize):
     font = pygame.font.Font('freesansbold.ttf', fsize)
     text = font.render(text, True, textColor, bgColor)
     textRect = text.get_rect()
-    textRect.center = (x, y)
+    textRect.topleft = (x, y)
     screen.blit(text, textRect)
 
 
@@ -79,7 +79,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                context._handle_click_event(event, pygame.mouse)
+                context._handle_click_event(event, pygame.mouse.get_pos())
 
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(pygame.Color(240,231,231))
@@ -123,8 +123,16 @@ if __name__ == '__main__':
 
 
         #TOP Status Bar
+        bgc = pygame.Color(69,24,4)
         pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100), border_bottom_left_radius=25, border_bottom_right_radius=25)
 
+        drawText("Avaliable Food: " + str(f'{Context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
+        drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
+        drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
+        drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
+        drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
+        drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
+        drawText(timeString, Context.white, bgc, 25, 40, 20)
 
 
 
