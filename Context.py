@@ -9,7 +9,7 @@ class Context:
 
     # Timing Constants
     tick = .1
-    ticksPerMinute = 20
+    ticksPerMinute = 2
     ticksPerHour = 120
     ticksPerDay = 2880
     minuteIncrement = 10
