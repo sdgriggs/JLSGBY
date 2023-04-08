@@ -28,7 +28,10 @@ class Context:
     click_regions = []
 
     # define plants
-    plants = ["Plant 1", "A PLANT WITH A SUPER LONG NAME 2", "Plant 3"]
+    plants = ["Plant 1",
+              "A PLANT WITH A SUPER LONG NAME 2",
+              "Plant 3",]
+    
 
 
     def _handle_click_event(self, event, mouse):
