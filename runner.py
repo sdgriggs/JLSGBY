@@ -98,7 +98,7 @@ if __name__ == '__main__':
         context.init_click_regions()
         for i in range(0, len(context.crops)):
             b = context.crops[i].name
-            text = smallfont.render(b, True, 'black')
+            text = smallfont.render(b + f"({context.crops[i].quantity})", True, 'black')
             rect = text.get_rect()
             rect.x = 100
             rect.y = 100 * i + 200
