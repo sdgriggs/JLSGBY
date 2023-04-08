@@ -1,4 +1,9 @@
+
 import math
+
+import crops as crops
+
+
 class Context:
     # Resource Counters
     food = 0
@@ -28,11 +33,8 @@ class Context:
     # define click regions
     click_regions = []
 
-    # define plants
-    plants = ["Plant 1",
-              "A PLANT WITH A SUPER LONG NAME 2",
-              "Plant 3",]
-    
+
+   
     current_env = {'temp': 0, 'pressure': 0, 'uv': 'Low', 'sunrise': 540, 'sunset': 1440}
 
     def get_temp(self):
@@ -60,6 +62,22 @@ class Context:
             min = '0' + min
         return hr + ":" + min
     
+
+    # define crop type objects. store as a list for easy iteration
+    crops = [
+        crops.generic(),
+        crops.coldResistant(),
+        crops.uvResistant(),
+        crops.hybrid(),
+        crops.cashcow()
+    ]
+
+    # define plant names
+    cropNames = []
+
+    for cropType in crops:
+        cropNames.append(cropType.name)
+
 
     def _handle_click_event(self, event, mouse):
         for region in self.click_regions:
