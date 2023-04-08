@@ -1,17 +1,17 @@
 import pygame
 import pygame.locals
 from Context import Context
+import time
 
 
+autoIncrement = .1 #(dummy value, will be calculated in increment function)
 
 def autominer():
-    global food
     global autoIncrement
-
     # calculate the number to increment by based off number of crops, conditions, etc.
 
-    time.sleep(tick)
-    food = food + autoIncrement
+    time.sleep(Context.tick)
+    Context.food = Context.food + autoIncrement
 
 def drawText(text, textColor, bgColor, x, y, fsize):
     font = pygame.font.Font('freesansbold.ttf', fsize)
@@ -55,23 +55,23 @@ if __name__ == '__main__':
         # Update clock
 
         tickCounter += 1
-        if tickCounter == ticksPerMinute:
+        if tickCounter == Context.ticksPerMinute:
             tickCounter = 0
             minNum += 1
 
-        if minNum == minPerHour:
+        if minNum == Context.minPerHour:
             minNum = 0
             hourNum += 1
 
-        if hourNum == hourPerSol:
+        if hourNum == Context.hourPerSol:
             hourNum = 0
             solNum += 1
 
-        if solNum == solPerYear:
+        if solNum == Context.solPerYear:
             solNum = 1
             yearNum += 1
 
-        timeString = f"Year {yearNum}, Sol {solNum}        {str(hourNum).zfill(2)}:{str(minNum - minNum % minuteIncrement).zfill(2)}"
+        timeString = f"Year {yearNum}, Sol {solNum}        {str(hourNum).zfill(2)}:{str(minNum - minNum % Context.minuteIncrement).zfill(2)}"
 
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
@@ -88,8 +88,8 @@ if __name__ == '__main__':
         # RENDER YOUR GAME HERE
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
-        drawText("you have " + str(f'{food:.2f}') + " food", black, white, 100, 50, 20)
-        drawText(timeString, black, white, 100, 100, 20)
+        drawText("you have " + str(f'{Context.food:.2f}') + " food", Context.black, Context.white, 100, 50, 20)
+        drawText(timeString, Context.black, Context.white, 100, 100, 20)
 
 
 
@@ -113,11 +113,11 @@ if __name__ == '__main__':
             rect.x = rect.topright[0]
             rect.width = 50
             pygame.draw.rect(screen, pygame.Color(0, 255, 0), rect, border_radius=25)
-            context.append_click_region(rect.x, rect.y, rect.width, rect.heigh, b  + "-buy")
+            context.append_click_region(rect.x, rect.y, rect.width, rect.height, b  + "-buy")
             rect.x = 50
             rect.width = 50
             pygame.draw.rect(screen, pygame.Color(255, 0, 0), rect, border_radius=25)
-            context.append_click_region(rect.x, rect.y, rect.width, rect.heigh, b  + "-sell")
+            context.append_click_region(rect.x, rect.y, rect.width, rect.height, b  + "-sell")
 
 
 

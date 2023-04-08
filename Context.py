@@ -1,7 +1,7 @@
 class Context:
     # Resource Counters
     food = 0
-    autoIncrement = .1 #(dummy value, will be calculated in increment function)
+
     #......
     # probably some crop names here
     #......
@@ -12,6 +12,11 @@ class Context:
     ticksPerMinute = 20
     ticksPerHour = 120
     ticksPerDay = 2880
+    minuteIncrement = 10
+
+    minPerHour = 60
+    hourPerSol = 24
+    solPerYear = 668   
 
     # defining colors
 
@@ -27,9 +32,9 @@ class Context:
 
 
     def _handle_click_event(self, event, mouse):
-        for region in self.click_regions:
-            if 
-        
+        #for region in self.click_regions:
+        #    if 
+        pass
 
     def init_click_regions(self):
         self.click_regions = []
