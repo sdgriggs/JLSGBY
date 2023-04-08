@@ -11,7 +11,7 @@ def autominer():
     # calculate the number to increment by based off number of crops, conditions, etc.
 
     time.sleep(Context.tick)
-    Context.food = Context.food + autoIncrement
+    context.doTickUpdate()
 
 def drawText(text, textColor, bgColor, x, y, fsize):
     font = pygame.font.Font('freesansbold.ttf', fsize)
@@ -72,8 +72,6 @@ if __name__ == '__main__':
             yearNum += 1
 
         timeString = f"Year {yearNum}, Sol {solNum}        {str(hourNum).zfill(2)}:{str(minNum - minNum % Context.minuteIncrement).zfill(2)}"
-
-        context.doTickUpdate()
 
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
