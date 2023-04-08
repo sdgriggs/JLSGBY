@@ -1,3 +1,4 @@
+import math
 class Context:
     # Resource Counters
     food = 0
@@ -32,17 +33,33 @@ class Context:
               "A PLANT WITH A SUPER LONG NAME 2",
               "Plant 3",]
     
+    current_env = {'temp': 0, 'pressure': 0, 'uv': 'Low', 'sunrise': 540, 'sunset': 1440}
 
-    temp = -18
+    def get_temp(self):
+        return self.current_env['temp']
+    
+    def get_pressure(self):
+        return self.current_env['pressure']
+    
+    def get_uv(self):
+        return self.current_env['uv']
+    
+    def get_sunrise(self):
+        return self._format_time(self.current_env['sunrise'])
+         
+    
+    def get_sunset(self):
+        return self._format_time(self.current_env['sunset'])
 
-    pressure = 800
-
-    uv = "Medium"
-
-    sunrise = '08:25'
-
-    sunset = '22:19'
-
+    def _format_time(self, min_since_midnight):
+        hr = str(math.floor(min_since_midnight / 60))
+        min = str(math.floor(min_since_midnight % 60))
+        if len(hr) < 2:
+            hr = '0' + hr
+        if len(min) < 2:
+            min = '0' + min
+        return hr + ":" + min
+    
 
     def _handle_click_event(self, event, mouse):
         for region in self.click_regions:

@@ -127,11 +127,11 @@ if __name__ == '__main__':
         pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100), border_bottom_left_radius=25, border_bottom_right_radius=25)
 
         drawText("Avaliable Food: " + str(f'{Context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
-        drawText(f"Current Air Temp: {Context.temp:.2f} °C", Context.white, bgc, 500, 65, 20)
-        drawText(f"Current Air Pressure: {Context.pressure:.2f} Pa", Context.white, bgc, 500, 15, 20)
-        drawText(f"Current UV index: {Context.uv} ", Context.white, bgc, 850, 65, 20)
-        drawText(f"Sunrise: {Context.sunrise}", Context.white, bgc, 300, 15, 20)
-        drawText(f"Sunset: {Context.sunset}", Context.white, bgc, 300, 65, 20)
+        drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
+        drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
+        drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
+        drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
+        drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
         drawText(timeString, Context.white, bgc, 25, 40, 20)
 
 
