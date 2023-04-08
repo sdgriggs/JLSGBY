@@ -102,8 +102,8 @@ if __name__ == '__main__':
         pygame.draw.rect(screen, pygame.Color(193,168,14), pygame.Rect(0, 0, left_pannel_width, infoObject.current_h))
         #Allocate the areas where clicks are valid
         context.init_click_regions()
-        for i in range(0, len(context.plants)):
-            b = context.plants[i]
+        for i in range(0, len(context.cropNames)):
+            b = context.cropNames[i]
             text = smallfont.render(b, True, 'black')
             rect = text.get_rect()
             rect.x = 100
