@@ -285,8 +285,11 @@ def show_game_screen():
 
             graph_x = infoObject.current_w / 4 * 3 + 7
             drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen, " °C")
-            drawGraph("Pressure", graph_x ,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen, " Pa")
-            drawUVGraph("UV Index", graph_x,580,350,200, pygame.Color(191,64,191), context.uv, screen)
+            #drawGraph("Pressure", graph_x ,580,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen, " Pa")
+            drawUVGraph("UV Index", graph_x,360,350,200, pygame.Color(191,64,191), context.uv, screen)
+            drawText(f"Production Per Hour:  {context.get_production():.2f}", 'black', None, graph_x, 580, 25)
+            drawText(f"Consumption Per Hour: {context.get_consumption():.2f}", 'black', None, graph_x, 620, 25)
+            drawText(f"Net Food Per Hour:    {context.get_net():.2f}", 'black', None, graph_x, 660, 25)
 
 
         # Discern good coords and dead zone

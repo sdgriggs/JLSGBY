@@ -157,9 +157,9 @@ class Context:
     #mapping for uv
     UV_MAPPING = {'Very_High': 4, 'High': 3, 'Moderate': 2, 'Low':1}
 
-    PEOPLE_THRESH = 150000
+    PEOPLE_THRESH = 53
 
-    ADTL_PERSON_THRESH = 1000
+    ADTL_PERSON_THRESH = 10
 
     first_person = "Insufficent-Food"
     # Resource Counters
@@ -168,6 +168,10 @@ class Context:
     totalfood = food
 
     population = 0
+
+    gainedFood = 0
+    consumedFood = 0
+
 
     # Timing Constants
     tick = .1
@@ -316,6 +320,15 @@ class Context:
     
     def get_sunset(self):
         return self._format_time(self.current_env['sunset'])
+    
+    def get_production(self):
+        return self.gainedFood * self.ticksPerHour
+    
+    def get_consumption(self):
+        return self.consumedFood * self.ticksPerHour
+    
+    def get_net(self):
+        return self.get_production() - self.get_consumption()
 
     def _format_time(self, min_since_midnight):
         hr = str(math.floor(min_since_midnight / 60))
@@ -327,13 +340,14 @@ class Context:
         return hr + ":" + min
     
     def doTickUpdate(self):
-        gainedFood = 0
+        self.gainedFood = 0
+        self.consumedFood = self.population * 3 /self.ticksPerDay
         for crop in self.crops:
 
-            gainedFood += crop.getFoodPerTick(self.get_temp(), self.get_uv())
+            self.gainedFood += crop.getFoodPerTick(self.get_temp(), self.get_uv())
 
-        self.food += gainedFood
-        self.totalfood += gainedFood
+        self.food += self.gainedFood - self.consumedFood
+        self.totalfood += self.gainedFood - self.consumedFood
 
     def _handle_click_event(self, event, mouse):
         
@@ -379,6 +393,9 @@ class Context:
     
     def increment_sol(self):
         
+        self.consumedFood += self.population * 3
+        self.food -= self.consumedFood
+
         self.solNum += 1
         if self.solNum > Context.solPerYear:
             self.solNum = 1
