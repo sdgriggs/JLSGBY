@@ -243,13 +243,13 @@ class Context:
 
 
     def _handle_click_event(self, event, mouse):
-
+        
         for region in self.click_regions:
 
             if region['x'] <= mouse[0] <= region['x'] + region['width'] and region['y'] <= mouse[1] <= region['y'] + region['height']:
 
                 command = region['desc'].split('-')
-
+               
                 if command[0] == "sell":
                     crop = self.cropDict[command[1]]
                     if crop.sellPlant():
@@ -274,7 +274,7 @@ class Context:
         self.click_regions = []
 
     def append_click_region(self, x, y, width, height, str):
-
+      
 
         self.click_regions.append({'x':x, 'y':y, 'width':width, 'height':height, 'desc': str})
     
