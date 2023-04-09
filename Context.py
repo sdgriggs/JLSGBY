@@ -30,12 +30,8 @@ class Crop:
 
         coords = [random.randint(x1, x2), random.randint(y1, y2)]
 
-        while dead_x1 <= coords[0] <= dead_x2:
-            coords[0] = random.randint(x1, x2)
-        
-        
-        while dead_y1 <= coords[1] <= dead_y2:
-            coords[1] = random.randint(y1, y2)
+        while dead_x1 <= coords[0] <= dead_x2 and dead_y1 <= coords[1] <= dead_y2:
+            coords = [random.randint(x1, x2), random.randint(y1, y2)]
 
         self.spriteCoords.append(coords)
 
@@ -77,7 +73,7 @@ class Crop:
 class generic(Crop):
 
     def __init__(self):
-        self.name = "Generic Plant"
+        self.name = "Super Tomato"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -50      
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}     
@@ -92,7 +88,7 @@ class generic(Crop):
 class uvResistant(Crop):
 
     def __init__(self):
-        self.name = "UV Resistant Plant"
+        self.name = "Resistant Radishes"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -50      
         self.safeUvLevels = {"Very_High": False, "High": True, "Moderate": True, "Low":True}       
@@ -106,7 +102,7 @@ class uvResistant(Crop):
 class coldResistant(Crop):
 
     def __init__(self):
-        self.name = "Cold Resistant Plant"
+        self.name = "Freeze Free Lettuce"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -90      
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}     
@@ -120,7 +116,7 @@ class coldResistant(Crop):
 class hybrid(Crop):
 
     def __init__(self):
-        self.name = "UV Resistant, Weak to Cold"
+        self.name = "Uber Tubers"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -30      
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}      
@@ -135,7 +131,7 @@ class cashcow(Crop):
 
     def __init__(self):
 
-        self.name = "Cash cow"
+        self.name = "Super Sweet Strawberries"
 
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -10      

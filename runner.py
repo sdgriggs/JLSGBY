@@ -189,7 +189,7 @@ def show_help_screen():
     screen.blit(img, img_rect)
 
     # Start with the start button. A very good place to start.
-    startBtnArea = pygame.Rect(2 * infoObject.current_w / 8, 12 * infoObject.current_h / 16, infoObject.current_w / 4, infoObject.current_h / 8 )
+    startBtnArea = pygame.Rect(5 * infoObject.current_w / 8, 12 * infoObject.current_h / 16, infoObject.current_w / 4, infoObject.current_h / 8 )
 
     if startBtnArea.collidepoint(pygame.mouse.get_pos()):
         draw_rect_alpha(screen, (255, 255, 255, 180), startBtnArea)
@@ -344,7 +344,7 @@ if __name__ == '__main__':
     pygame.init()
     infoObject = pygame.display.Info()
     screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h - 60))
-    pygame.display.set_caption("Marmer")
+    pygame.display.set_caption("Martianeer")
 
     screen.fill((0,0,0))
     clock = pygame.time.Clock()
