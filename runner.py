@@ -337,9 +337,9 @@ def show_game_screen():
             rect = drawText("Got it!", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
             context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'exit')
             
-        if context.population > 10 and context.answer == 'Not-asked':
+        if context.population > 500 and context.answer == 'Not-asked':
             context.answer = 'Asked'
-        if context.population > 10 and context.answer == 'Asked':
+        if context.population > 500 and context.answer == 'Asked':
             context.answer = 'Asked'
             drawPopup("Congratulations", "You have been offered the position of 'Head Farmer' at a new colony, will you leave your colony and start a new one?")
             rect = drawText("Stay and Farm", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
