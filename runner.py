@@ -113,6 +113,8 @@ if __name__ == '__main__':
         screen.blit(img, img_rect)
 
 
+        
+
         #Right information pannel
         right_pannel_width = infoObject.current_w /4 
         pygame.draw.rect(screen, pygame.Color(253,166,0), pygame.Rect(infoObject.current_w - right_pannel_width, 0, right_pannel_width, infoObject.current_h))
@@ -121,7 +123,13 @@ if __name__ == '__main__':
         context.init_click_regions()
 
         # Make our toggle buttons
+        img = pygame.image.load("assets\\ice-cream.png").convert_alpha()
 
+        img = pygame.transform.scale(img, (200,300))
+        img_rect = img.get_rect()
+        img_rect.topleft = ((infoObject.current_w / 4 * 3 - 220 , infoObject.current_h - 380))
+        screen.blit(img, img_rect)
+        context.append_click_region(img_rect.x, img_rect.y, img_rect.width, img_rect.height, "click")
 
         # Plant Portfolio Button
         pbRect = drawText("  Plant Portfolio  ", 'black', 'white', infoObject.current_w - right_pannel_width + 20, 110, 20)
@@ -149,6 +157,7 @@ if __name__ == '__main__':
 
 
         else:
+
             graph_x = infoObject.current_w / 4 * 3 + 7
             drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
             drawGraph("Pressure", graph_x ,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
@@ -167,15 +176,11 @@ if __name__ == '__main__':
         context.dead_y2 = 600
 
 
+
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
         #pygame.draw.rect(screen, "white", pygame.Rect(infoObject.current_w / 2 - 200,infoObject.current_h / 2 - 100, 200, 200))
-        clickme = smallfont.render("Click to turn CO2 into Glucose", True, 'black', 'white')
-        clickRect = clickme.get_rect()
-        clickRect.x = infoObject.current_w / 2 - 200
-        clickRect.y = infoObject.current_h / 2 - 100 
-        screen.blit(clickme, clickRect)
-        context.append_click_region(clickRect.x, clickRect.y, clickRect.width, clickRect.height, "click")
+
 
         #TOP Status Bar
         bgc = pygame.Color(69,24,4)
