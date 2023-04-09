@@ -113,6 +113,9 @@ class cashcow(Crop):
 class Context:
     # Maximum number of days that history is kept for
     MAX_HISTORY = 30
+
+    #mapping for uv
+    UV_MAPPING = {'Very_High': 4, 'High': 3, 'Moderate': 2, 'Low':1}
     # Resource Counters
     food = 50
 
@@ -143,8 +146,8 @@ class Context:
 
 
     # define last 30 days of highs/lows/pressure/uv
-    highs = [1,5,3,2,1,4,-6,-5,2,8,6,-6,3,-2,1]
-    lows = []
+    highs = []
+    lows =  []
     pressure = []
     uv = []
 
@@ -158,7 +161,7 @@ class Context:
     yearNum = 1
     solNum = 1
 
-    hourNum = 0
+    hourNum = 23
 
     minNum = 0
 
@@ -170,7 +173,7 @@ class Context:
 
         if self.tickCounter >= Context.ticksPerMinute:
             self.tickCounter = 0
-            self.minNum += 1
+            self.minNum += 60
 
         if self.minNum >= Context.minPerHour:
             self.minNum = 0
@@ -276,6 +279,7 @@ class Context:
         self.click_regions.append({'x':x, 'y':y, 'width':width, 'height':height, 'desc': str})
     
     def increment_sol(self):
+        
         self.solNum += 1
         if self.solNum >= Context.solPerYear:
             self.solNum = 1
@@ -283,11 +287,20 @@ class Context:
         
         self.highs.append(self.current_env['max_temp'])
         while len(self.highs) > Context.MAX_HISTORY:
-                self.highs.pop()
+            self.highs.pop()
         
         self.lows.append(self.current_env['min_temp'])
         while len(self.highs) > Context.MAX_HISTORY:
-                self.lows.pop()
+            self.lows.pop()
+
+
+        self.pressure.append(self.current_env['pressure'])
+        while len(self.pressure) > Context.MAX_HISTORY:
+            self.pressure.pop()
+
+        self.uv.append(Context.UV_MAPPING[self.current_env['uv_index']])
+        while len(self.uv) > Context.MAX_HISTORY:
+            self.uv.pop()
 
         self.current_env = soldata.getRandomizedSolData(self.solNum - 1, self.sol_data)
     
