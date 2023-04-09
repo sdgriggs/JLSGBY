@@ -198,6 +198,8 @@ class Context:
 
     sol_data = soldata.getAggregatedSolData()
 
+    #as long as we start after 1 prevTemp can be any placeholder value
+    prevTemp = 1
     current_env = soldata.getRandomizedSolData(0, sol_data)
 
     tickCounter = 0
@@ -230,10 +232,29 @@ class Context:
             self.hourNum = 0
             self.increment_sol()
 
-    def get_temp(self):
-        if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
-            return self.current_env['min_temp']
-        return self.current_env['max_temp']
+    def get_temp(self, minutes = None):
+        min_temp = self.current_env['min_temp']
+        max_temp = self.current_env['max_temp']
+        if minutes == None:
+            minutes = self.minNum + self.hourNum * 60
+        minutesInDay = 1440
+        temp_range = max_temp - min_temp
+
+
+        linearthreshold = 90
+        #if we're less than the linear threshold in we'll do a linear approximation
+        #in the hopes we can somewhat smoothly catch up or wait for the sinusoidal approximation
+        #when switching between days
+        if minutes < linearthreshold:
+            cosapprox = min_temp + .5 * temp_range + .5 * temp_range * math.cos((linearthreshold + self.current_env['sunrise'] + 60) * 2 * math.pi / minutesInDay)
+            m = (cosapprox - self.prevTemp) / linearthreshold
+            b = self.prevTemp
+            return m * minutes + b
+        #if we're an hour in we'll do a sinusoidal approximation
+        return min_temp + .5 * temp_range + .5 * temp_range * math.cos((minutes + self.current_env['sunrise'] + 60) * 2 * math.pi / minutesInDay)
+#        if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
+#            return self.current_env['min_temp']
+#        return self.current_env['max_temp']
     
     def get_pressure(self):
         return self.current_env['pressure']
@@ -325,6 +346,9 @@ class Context:
         while len(self.uv) > Context.MAX_HISTORY:
             self.uv = self.uv[1:]
 
+        #we use a custom minute such that we save the previous value
+        self.prevTemp = self.get_temp(minutes = 23 * 60 + 59)
+        #and now we update current_env
         self.current_env = soldata.getRandomizedSolData(self.solNum - 1, self.sol_data)
     
 
