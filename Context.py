@@ -156,6 +156,12 @@ class Context:
 
     #mapping for uv
     UV_MAPPING = {'Very_High': 4, 'High': 3, 'Moderate': 2, 'Low':1}
+
+    PEOPLE_THRESH = 53
+
+    ADTL_PERSON_THRESH = 10
+
+    first_person = "Insufficent-Food"
     # Resource Counters
     food = 50
 
@@ -244,9 +250,20 @@ class Context:
             for c in self.crp:
                 if c.thresh <= self.totalfood:
                     self.crops.append(c)
+
+    def update_people(self):
+        if self.totalfood >= self.PEOPLE_THRESH:
+            self.population = round((self.totalfood - self.PEOPLE_THRESH)/self.ADTL_PERSON_THRESH)
+            if self.first_person == "Shown":
+                return
+            elif self.first_person == "Insufficent-Food" and self.population >= 1:
+                self.first_person = "To-Show"
+            
+    
     
     def next_tick(self):
         self.update_crops()
+        self.update_people()
         self.tickCounter += 1
 
         if self.tickCounter >= Context.ticksPerMinute:
@@ -348,6 +365,9 @@ class Context:
                         self.portfolioMode = True
                     else:
                         self.portfolioMode = False
+
+                elif command[0] == "exit":
+                    self.first_person = "Shown"
 
     def init_click_regions(self):
         self.click_regions = []
