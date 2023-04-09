@@ -25,7 +25,8 @@ class Crop:
         while dead_x1 <= coords[0] <= dead_x2:
             coords[0] = random.randint(x1, x2)
         
-        while dead_y1 <= coords[0] <= dead_y2:
+        
+        while dead_y1 <= coords[1] <= dead_y2:
             coords[1] = random.randint(y1, y2)
 
         self.spriteCoords.append(coords)

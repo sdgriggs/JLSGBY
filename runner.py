@@ -170,10 +170,10 @@ if __name__ == '__main__':
         context.win_y1 = 100
         context.win_y2 = infoObject.current_h
 
-        context.dead_x1 = 500
-        context.dead_x2 = 600
-        context.dead_y1 = 500
-        context.dead_y2 = 600
+        context.dead_x1 = img_rect.topleft[0]
+        context.dead_x2 = context.dead_x1 + img_rect.width
+        context.dead_y1 = img_rect.topleft[1]
+        context.dead_y2 = context.dead_y1 + img_rect.height
 
 
 
