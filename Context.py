@@ -238,6 +238,10 @@ class Context:
 
     minNum = 0
 
+    answer = 'Not-asked'
+
+    reset = False
+
     # controls toggle gui
     portfolioMode = True
 
@@ -248,16 +252,19 @@ class Context:
     def update_crops(self):
             self.crops = []
             for c in self.crp:
-                if c.thresh <= self.totalfood:
+                if c.thresh <= self.totalfood or self.reset:
                     self.crops.append(c)
 
     def update_people(self):
+        
         if self.totalfood >= self.PEOPLE_THRESH:
             self.population = round((self.totalfood - self.PEOPLE_THRESH)/self.ADTL_PERSON_THRESH)
+            
             if self.first_person == "Shown":
                 return
             elif self.first_person == "Insufficent-Food" and self.population >= 1:
                 self.first_person = "To-Show"
+            
             
     
     
@@ -378,6 +385,21 @@ class Context:
 
                 elif command[0] == "exit":
                     self.first_person = "Shown"
+                
+                elif command[0] == 'stay':
+                    self.answer = 'stay'
+
+                elif command[0] == 'leave':
+                    self.answer = 'leave'
+                    self.reset = True
+                    self.population = 0
+                    self.totalfood = 0
+                    for crop in self.crops:
+                        while crop.sellPlant():
+                            pass
+                    self.food = 0
+                    self.first_person = "Insufficent-Food"
+                    self.answer = "Not-asked"
 
     def init_click_regions(self):
         self.click_regions = []
