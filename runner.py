@@ -15,12 +15,36 @@ def autominer():
     context.doTickUpdate()
 
 def drawText(text, textColor, bgColor, x, y, fsize):
-    font = pygame.font.Font('freesansbold.ttf', fsize)
+    font = pygame.font.SysFont('Rockwell', fsize)
     text = font.render(text, True, textColor, bgColor)
     textRect = text.get_rect()
     textRect.topleft = (x, y)
     screen.blit(text, textRect)
 
+def drawGraph(title, x, y, width, height, color, data, screen):
+    pygame.draw.rect(screen, pygame.Color(255,255,255),pygame.Rect(x, y, width, height))
+    drawText(title, color, pygame.Color(255,255,255), x + 20, y + 5, 20)
+    pygame.draw.rect(screen, color, pygame.Rect(x+5, y+5, 3, height - 10))
+    pygame.draw.rect(screen, color, pygame.Rect(x+3, y + height - 18, width - 10, 3))
+    points = []
+    max_val = -9999999999
+    min_val = 9999999999
+    for d in data:
+        if d > max_val:
+            max_val = d
+        if d < min_val:
+            min_val = d
+    x_start = x+5
+    y_start = y + 40
+    x_end = x_start + width - 10
+    y_end = y_start + height - 58
+    for i in range(0, len(data)):
+        d = data[i]
+        points.append((x_start + (x_end - x_start ) / len(data) * (i+1), y_end -
+                        (y_end - y_start)*(d - min_val)/(max_val - min_val)  ))
+    pygame.draw.lines(screen, color, False, points, 2)
+
+    
 
 
  
@@ -40,7 +64,7 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     running = True
     c = 0
-    smallfont = pygame.font.SysFont('Corbel',35)
+    smallfont = pygame.font.SysFont('Rockwell',35)
 
     context = Context()
     this_sol_data = {}
@@ -105,6 +129,9 @@ if __name__ == '__main__':
         bgc = pygame.Color(69,24,4)
         pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100), border_bottom_left_radius=25, border_bottom_right_radius=25)
 
+
+        drawGraph("High Temps", 1168,120,350,200, pygame.Color(0,0,0), context.highs, screen)
+
         drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
         drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
         drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
@@ -112,6 +139,7 @@ if __name__ == '__main__':
         drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
         drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
         drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
+
 
 
 
