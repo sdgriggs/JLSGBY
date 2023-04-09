@@ -24,7 +24,7 @@ def drawText(text, textColor, bgColor, x, y, fsize):
 
 def drawGraph(title, x, y, width, height, color1, color2, data1, data2, screen):
     if not len(data1) == len(data2):
-        raise("UGA BOOGA")
+        raise Exception("UGA BOOGA")
     
     pygame.draw.rect(screen, pygame.Color(225,225,245),pygame.Rect(x, y, width, height))
     drawText(title, pygame.Color(0,0,0), None, x + 20, y + 5, 20)
@@ -90,6 +90,7 @@ if __name__ == '__main__':
 
     while running:
 
+
         autominer()
 
         # Update clock
@@ -154,10 +155,9 @@ if __name__ == '__main__':
 
 
         else:
-            drawGraph("High Temps", 1168,150,350,200, pygame.Color(0,0,0), context.highs, screen)
-            drawGraph("Temps",1168,120,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
-            drawGraph("Pressure", 1168,340,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
-            drawGraph("UV Index", 1168,560,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
+            drawGraph("Temps",1168,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
+            drawGraph("Pressure", 1168,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
+            drawGraph("UV Index", 1168,580,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
 
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 

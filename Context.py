@@ -8,7 +8,7 @@ class Crop:
         self.name = "Parent crop."
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = 10       # Dummy value.
-        self.safeUvLevels = {"High": False, "Moderate": False, "Low":False}          # Dummy value.
+        self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": False, "Low":False}          # Dummy value.
         self.sellValue = 0              # Dummy value.
         self.buyValue = 0      # Dummy value.
         self.foodPerHourPerPlant = 0        # Dummy value
@@ -105,7 +105,7 @@ class cashcow(Crop):
 
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -10      
-        self.safeUvLevels = {"High": False, "Moderate": False, "Low":True}     
+        self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": False, "Low":True}     
         self.sellValue = 15              
         self.buyValue = 30     
         self.foodPerHourPerPlant = 25     
@@ -287,20 +287,20 @@ class Context:
         
         self.highs.append(self.current_env['max_temp'])
         while len(self.highs) > Context.MAX_HISTORY:
-            self.highs.pop()
+            self.highs = self.highs[1:]
         
         self.lows.append(self.current_env['min_temp'])
-        while len(self.highs) > Context.MAX_HISTORY:
-            self.lows.pop()
+        while len(self.lows) > Context.MAX_HISTORY:
+            self.lows = self.lows[1:]
 
 
         self.pressure.append(self.current_env['pressure'])
         while len(self.pressure) > Context.MAX_HISTORY:
-            self.pressure.pop()
+            self.pressure = self.pressure[1:]
 
         self.uv.append(Context.UV_MAPPING[self.current_env['uv_index']])
         while len(self.uv) > Context.MAX_HISTORY:
-            self.uv.pop()
+            self.uv = self.uv[1:]
 
         self.current_env = soldata.getRandomizedSolData(self.solNum - 1, self.sol_data)
     
