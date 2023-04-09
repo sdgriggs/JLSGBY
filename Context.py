@@ -122,7 +122,7 @@ class hybrid(Crop):
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}      
         self.sellValue = 15              
         self.buyValue = 30     
-        self.foodPerHourPerPlant = 6.5 
+        self.foodPerHourPerPlant = 7.5 
         self.spriteFile = "assets\\potato.png"
         self.spriteCoords = []   
         self.thresh = 5000       
@@ -340,7 +340,7 @@ class Context:
     
     def doTickUpdate(self):
         self.gainedFood = 0
-        self.consumedFood = self.population * 3 /self.ticksPerDay
+        self.consumedFood = self.population * 3 /self.ticksPerDay * 100
         for crop in self.crops:
 
             self.gainedFood += crop.getFoodPerTick(self.get_temp(), self.get_uv())

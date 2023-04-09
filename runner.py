@@ -288,7 +288,7 @@ def show_game_screen():
         # Discern good coords and dead zone
         context.win_x1 = 0
         context.win_x2 = infoObject.current_w - right_pannel_width
-        context.win_y1 = 100
+        context.win_y1 = 110
         context.win_y2 = infoObject.current_h
 
         context.dead_x1 = img_rect.topleft[0]
