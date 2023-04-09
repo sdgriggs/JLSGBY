@@ -189,26 +189,24 @@ class Context:
     def _handle_click_event(self, event, mouse):
 
         for region in self.click_regions:
-            #print(region['desc'])
-            #print(region['x'] <= mouse[0] <= region['x'] + region['width'])
-            #print(region['y'] <= mouse[0] <= region['y'] + region['height'])
+
             if region['x'] <= mouse[0] <= region['x'] + region['width'] and region['y'] <= mouse[1] <= region['y'] + region['height']:
 
                 command = region['desc'].split('-')
 
-                crop = self.cropDict[command[0]]
-
-                if command[1] == "sell":
+                if command[0] == "sell":
+                    crop = self.cropDict[command[1]]
                     if crop.sellPlant():
                         self.food += crop.sellValue
 
-                elif command[1] == "buy":
+                elif command[0] == "buy":
+                    crop = self.cropDict[command[1]]
                     if self.food >= crop.buyValue:
                         crop.addPlant()
                         self.food -= crop.buyValue
 
-                else:
-                    print(command[1])
+                elif command[0]  == "click":
+                    self.food += 1
 
     def init_click_regions(self):
         self.click_regions = []

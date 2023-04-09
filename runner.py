@@ -113,17 +113,21 @@ if __name__ == '__main__':
             rect.x = rect.topright[0]
             rect.width = 50
             pygame.draw.rect(screen, pygame.Color(0, 255, 0), rect, border_radius=25)
-            context.append_click_region(rect.x, rect.y, rect.width, rect.height, b  + "-buy")
+            context.append_click_region(rect.x, rect.y, rect.width, rect.height, "buy-" + b)
             rect.x = 50
             rect.width = 50
             pygame.draw.rect(screen, pygame.Color(255, 0, 0), rect, border_radius=25)
-            context.append_click_region(rect.x, rect.y, rect.width, rect.height, b  + "-sell")
+            context.append_click_region(rect.x, rect.y, rect.width, rect.height, "sell-" + b)
 
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
-        #drawText("you have " + str(f'{Context.food:.2f}') + " food", Context.black, Context.white, 500, 300, 20)
-        #drawText(timeString, Context.black, Context.white, 500, 400, 20)
-
+        #pygame.draw.rect(screen, "white", pygame.Rect(infoObject.current_w / 2 - 200,infoObject.current_h / 2 - 100, 200, 200))
+        clickme = smallfont.render("Click to turn CO2 into Glucose", True, 'black', 'white')
+        clickRect = clickme.get_rect()
+        clickRect.x = infoObject.current_w / 2 - 200
+        clickRect.y = infoObject.current_h / 2 - 100 
+        screen.blit(clickme, clickRect)
+        context.append_click_region(clickRect.x, clickRect.y, clickRect.width, clickRect.height, "click")
 
         #TOP Status Bar
         bgc = pygame.Color(69,24,4)
