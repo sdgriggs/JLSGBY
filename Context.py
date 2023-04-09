@@ -157,9 +157,9 @@ class Context:
     #mapping for uv
     UV_MAPPING = {'Very_High': 4, 'High': 3, 'Moderate': 2, 'Low':1}
 
-    PEOPLE_THRESH = 53
+    PEOPLE_THRESH = 150000
 
-    ADTL_PERSON_THRESH = 10
+    ADTL_PERSON_THRESH = 1000
 
     first_person = "Insufficent-Food"
     # Resource Counters

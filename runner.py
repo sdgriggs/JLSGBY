@@ -125,7 +125,7 @@ def show_title_screen():
     screen.blit(img, img_rect)
 
 
-    screen.fill((0,0,0))
+
     clock = pygame.time.Clock()
     running = True
     first_person_disp = False
