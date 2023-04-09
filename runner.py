@@ -137,8 +137,9 @@ if __name__ == '__main__':
                 rect = drawText(b, 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 20, 25)
                 quanRect = drawText(f"Quantity Owned: {context.crops[i].quantity}", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 50, 15)
                 costRect = drawText(f"Cost: {context.crops[i].buyValue} units", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 65, 15)
-                tempRect = drawText(f"Minimum Temperature: {context.crops[i].minGoodTemp}", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 80, 15)
+                tempRect = drawText(f"Minimum Temperature: {context.crops[i].minGoodTemp}C", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 80, 15)
                 uvRect = drawText(context.crops[i].getUvTolerance(), 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 95, 15)
+                fphRect = drawText(f'Food per Hour: {context.crops[i].foodPerHourPerPlant} units', 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 110, 15)
 
                 buyRect = drawText("    Buy    ", 'black', 'green', infoObject.current_w - 100,  125 * (i+1) + 50, 20)
                 context.append_click_region(buyRect.x, buyRect.y, buyRect.width, buyRect.height, "buy-" + b)
@@ -152,6 +153,19 @@ if __name__ == '__main__':
             drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
             drawGraph("Pressure", graph_x ,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
             drawGraph("UV Index", graph_x,580,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
+
+
+        # Discern good coords and dead zone
+        context.win_x1 = 0
+        context.win_x2 = infoObject.current_w - right_pannel_width
+        context.win_y1 = 100
+        context.win_y2 = infoObject.current_h
+
+        context.dead_x1 = 500
+        context.dead_x2 = 600
+        context.dead_y1 = 500
+        context.dead_y2 = 600
+
 
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
@@ -180,7 +194,15 @@ if __name__ == '__main__':
 
 
 
-
+        # Draw the plants!
+        for crop in context.crops:
+            for coords in crop.spriteCoords:
+                img = pygame.image.load(crop.spriteFile).convert_alpha()
+                img_rect = img.get_rect()
+                img_rect.centerx = coords[0]
+                img_rect.centery = coords[1]
+                screen.blit(img, img_rect)
+    
 
 
         # flip() the display to put your work on screen

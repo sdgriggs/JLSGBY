@@ -1,5 +1,6 @@
 import math
 import weather_data.soldata as soldata
+import random
 
 
 class Crop:
@@ -11,16 +12,29 @@ class Crop:
         self.sellValue = 0              # Dummy value.
         self.buyValue = 0      # Dummy value.
         self.foodPerHourPerPlant = 0        # Dummy value
+        self.spriteFile = ""
+        self.spriteCoords = []
 
     # Increases the number of plants of this crop by one. It is the implementing function's responsibility to check that there are sufficient funds.
-    def addPlant(self):
+    def addPlant(self, x1, y1, x2, y2, dead_x1, dead_y1, dead_x2, dead_y2):
         self.quantity += 1
         # Possibly increase price per plant on purchase?
+
+        coords = [random.randint(x1, x2), random.randint(y1, y2)]
+
+        while dead_x1 <= coords[0] <= dead_x2:
+            coords[0] = random.randint(x1, x2)
+        
+        while dead_y1 <= coords[0] <= dead_y2:
+            coords[1] = random.randint(y1, y2)
+
+        self.spriteCoords.append(coords)
 
     # Decreases the number of plants, if possible. Returns true on a success and false on a failure.
     def sellPlant(self):
         if self.quantity >= 1:
             self.quantity -= 1
+            self.spriteCoords.pop()
             return True
         else:
             return False
@@ -60,7 +74,9 @@ class generic(Crop):
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}     
         self.sellValue = 10              
         self.buyValue = 20     
-        self.foodPerHourPerPlant = 5        
+        self.foodPerHourPerPlant = 5
+        self.spriteFile = "assets\\green_plant.png"
+        self.spriteCoords = []        
 
 
 class uvResistant(Crop):
@@ -73,6 +89,8 @@ class uvResistant(Crop):
         self.sellValue = 15             
         self.buyValue = 25     
         self.foodPerHourPerPlant = 3.5        
+        self.spriteFile = "assets\\red_plant.png"
+        self.spriteCoords = []       
 
 class coldResistant(Crop):
 
@@ -83,7 +101,9 @@ class coldResistant(Crop):
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}     
         self.sellValue = 15              
         self.buyValue = 25     
-        self.foodPerHourPerPlant = 2        
+        self.foodPerHourPerPlant = 2
+        self.spriteFile = "assets\\blue_plant.png"
+        self.spriteCoords = []               
 
 class hybrid(Crop):
 
@@ -94,7 +114,9 @@ class hybrid(Crop):
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}      
         self.sellValue = 15              
         self.buyValue = 30     
-        self.foodPerHourPerPlant = 6.5        
+        self.foodPerHourPerPlant = 6.5 
+        self.spriteFile = "assets\\potato.png"
+        self.spriteCoords = []           
 
 class cashcow(Crop):
 
@@ -107,7 +129,9 @@ class cashcow(Crop):
         self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": False, "Low":True}     
         self.sellValue = 15              
         self.buyValue = 30     
-        self.foodPerHourPerPlant = 25     
+        self.foodPerHourPerPlant = 25    
+        self.spriteFile = "assets\\cash_cow.png"
+        self.spriteCoords = []     
 
 class Context:
     # Maximum number of days that history is kept for
@@ -117,11 +141,6 @@ class Context:
     UV_MAPPING = {'Very_High': 4, 'High': 3, 'Moderate': 2, 'Low':1}
     # Resource Counters
     food = 50
-
-    #......
-    # probably some crop names here
-    #......
-
 
     # Timing Constants
     tick = .1
@@ -150,6 +169,18 @@ class Context:
     pressure = []
     uv = []
 
+
+    # define the crop window
+    win_x1 = 0
+    win_x2 = 0
+    win_y1 = 0
+    win_y2 = 0
+    # define the clicking deadzone
+    dead_x1 = 0
+    dead_x2 = 0
+    dead_y1 = 0
+    dead_y2 = 0
+
         # define crop type objects. store as a list for easy iteration
     crops = [
         generic(),
@@ -163,6 +194,7 @@ class Context:
 
     for crop in crops:
         cropDict.update({crop.name: crop})
+
 
     sol_data = soldata.getAggregatedSolData()
 
@@ -178,6 +210,10 @@ class Context:
 
     # controls toggle gui
     portfolioMode = True
+
+
+    # plant sprites and stuff
+    coords = []
 
     def next_tick(self):
         self.tickCounter += 1
@@ -245,7 +281,7 @@ class Context:
                 elif command[0] == "buy":
                     crop = self.cropDict[command[1]]
                     if self.food >= crop.buyValue:
-                        crop.addPlant()
+                        crop.addPlant(self.win_x1, self.win_y1, self.win_x2, self.win_y2, self.dead_x1, self.dead_y1, self.dead_x2, self.dead_y2)
                         self.food -= crop.buyValue
 
                 elif command[0]  == "click":
