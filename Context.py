@@ -2,6 +2,13 @@ import math
 import weather_data.soldata as soldata
 import random
 
+from enum import Enum
+ 
+class GameState(Enum):
+    TITLE = 1
+    HELP  = 2
+    GAME  = 3
+
 
 class Crop:
     def __init__(self):
@@ -134,6 +141,9 @@ class cashcow(Crop):
         self.spriteCoords = []     
 
 class Context:
+
+    gameState = GameState.TITLE
+
     # Maximum number of days that history is kept for
     MAX_HISTORY = 30
 
