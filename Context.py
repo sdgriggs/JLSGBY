@@ -21,6 +21,7 @@ class Crop:
         self.foodPerHourPerPlant = 0        # Dummy value
         self.spriteFile = ""
         self.spriteCoords = []
+        self.thresh = 0
 
     # Increases the number of plants of this crop by one. It is the implementing function's responsibility to check that there are sufficient funds.
     def addPlant(self, x1, y1, x2, y2, dead_x1, dead_y1, dead_x2, dead_y2):
@@ -32,7 +33,8 @@ class Crop:
         while dead_x1 <= coords[0] <= dead_x2:
             coords[0] = random.randint(x1, x2)
         
-        while dead_y1 <= coords[0] <= dead_y2:
+        
+        while dead_y1 <= coords[1] <= dead_y2:
             coords[1] = random.randint(y1, y2)
 
         self.spriteCoords.append(coords)
@@ -83,7 +85,8 @@ class generic(Crop):
         self.buyValue = 20     
         self.foodPerHourPerPlant = 5
         self.spriteFile = "assets\\green_plant.png"
-        self.spriteCoords = []        
+        self.spriteCoords = []   
+        self.thresh = 0     
 
 
 class uvResistant(Crop):
@@ -97,7 +100,8 @@ class uvResistant(Crop):
         self.buyValue = 25     
         self.foodPerHourPerPlant = 3.5        
         self.spriteFile = "assets\\red_plant.png"
-        self.spriteCoords = []       
+        self.spriteCoords = []   
+        self.thresh = 100    
 
 class coldResistant(Crop):
 
@@ -110,7 +114,8 @@ class coldResistant(Crop):
         self.buyValue = 25     
         self.foodPerHourPerPlant = 2
         self.spriteFile = "assets\\blue_plant.png"
-        self.spriteCoords = []               
+        self.spriteCoords = []      
+        self.thresh = 250         
 
 class hybrid(Crop):
 
@@ -123,7 +128,8 @@ class hybrid(Crop):
         self.buyValue = 30     
         self.foodPerHourPerPlant = 6.5 
         self.spriteFile = "assets\\potato.png"
-        self.spriteCoords = []           
+        self.spriteCoords = []   
+        self.thresh = 500        
 
 class cashcow(Crop):
 
@@ -138,7 +144,8 @@ class cashcow(Crop):
         self.buyValue = 30     
         self.foodPerHourPerPlant = 25    
         self.spriteFile = "assets\\cash_cow.png"
-        self.spriteCoords = []     
+        self.spriteCoords = [] 
+        self.thresh = 1000    
 
 class Context:
 
@@ -151,6 +158,10 @@ class Context:
     UV_MAPPING = {'Very_High': 4, 'High': 3, 'Moderate': 2, 'Low':1}
     # Resource Counters
     food = 50
+
+    totalfood = food
+
+    population = 0
 
     # Timing Constants
     tick = .1
@@ -192,22 +203,25 @@ class Context:
     dead_y2 = 0
 
         # define crop type objects. store as a list for easy iteration
-    crops = [
-        generic(),
+    crp = [
+        generic(),    
         coldResistant(),
         uvResistant(),
         hybrid(),
         cashcow()
     ]
 
+    crops = []
     cropDict = {}
 
-    for crop in crops:
+    for crop in crp:
         cropDict.update({crop.name: crop})
 
 
     sol_data = soldata.getAggregatedSolData()
 
+    #as long as we start after 1 prevTemp can be any placeholder value
+    prevTemp = 1
     current_env = soldata.getRandomizedSolData(0, sol_data)
 
     tickCounter = 0
@@ -225,7 +239,14 @@ class Context:
     # plant sprites and stuff
     coords = []
 
+    def update_crops(self):
+            self.crops = []
+            for c in self.crp:
+                if c.thresh <= self.totalfood:
+                    self.crops.append(c)
+    
     def next_tick(self):
+        self.update_crops()
         self.tickCounter += 1
 
         if self.tickCounter >= Context.ticksPerMinute:
@@ -240,15 +261,36 @@ class Context:
             self.hourNum = 0
             self.increment_sol()
 
-    def get_temp(self):
-        if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
-            return self.current_env['min_temp']
-        return self.current_env['max_temp']
+    def get_temp(self, minutes = None):
+        min_temp = self.current_env['min_temp']
+        max_temp = self.current_env['max_temp']
+        if minutes == None:
+            minutes = self.minNum + self.hourNum * 60
+        minutesInDay = 1440
+        temp_range = max_temp - min_temp
+
+
+        linearthreshold = 90
+        #if we're less than the linear threshold in we'll do a linear approximation
+        #in the hopes we can somewhat smoothly catch up or wait for the sinusoidal approximation
+        #when switching between days
+        if minutes < linearthreshold:
+            cosapprox = min_temp + .5 * temp_range + .5 * temp_range * math.cos((linearthreshold + self.current_env['sunrise'] + 60) * 2 * math.pi / minutesInDay)
+            m = (cosapprox - self.prevTemp) / linearthreshold
+            b = self.prevTemp
+            return m * minutes + b
+        #if we're an hour in we'll do a sinusoidal approximation
+        return min_temp + .5 * temp_range + .5 * temp_range * math.cos((minutes + self.current_env['sunrise'] + 60) * 2 * math.pi / minutesInDay)
+#        if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
+#            return self.current_env['min_temp']
+#        return self.current_env['max_temp']
     
     def get_pressure(self):
         return self.current_env['pressure']
     
     def get_uv(self):
+        if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
+            return "Low"
         return self.current_env['uv_index']
     
     def get_sunrise(self):
@@ -274,6 +316,7 @@ class Context:
             gainedFood += crop.getFoodPerTick(self.get_temp(), self.get_uv())
 
         self.food += gainedFood
+        self.totalfood += gainedFood
 
     def _handle_click_event(self, event, mouse):
         
@@ -287,6 +330,8 @@ class Context:
                     crop = self.cropDict[command[1]]
                     if crop.sellPlant():
                         self.food += crop.sellValue
+                        self.totalfood += crop.sellValue
+                    
 
                 elif command[0] == "buy":
                     crop = self.cropDict[command[1]]
@@ -296,6 +341,7 @@ class Context:
 
                 elif command[0]  == "click":
                     self.food += 1
+                    self.totalfood += 1
 
                 elif command[0] == "switch":
                     if command[1] == "portfolio":
@@ -335,6 +381,9 @@ class Context:
         while len(self.uv) > Context.MAX_HISTORY:
             self.uv = self.uv[1:]
 
+        #we use a custom minute such that we save the previous value
+        self.prevTemp = self.get_temp(minutes = 23 * 60 + 59)
+        #and now we update current_env
         self.current_env = soldata.getRandomizedSolData(self.solNum - 1, self.sol_data)
     
 
