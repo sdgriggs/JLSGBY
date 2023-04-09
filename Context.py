@@ -14,6 +14,7 @@ class Crop:
         self.foodPerHourPerPlant = 0        # Dummy value
         self.spriteFile = ""
         self.spriteCoords = []
+        self.thresh = 0
 
     # Increases the number of plants of this crop by one. It is the implementing function's responsibility to check that there are sufficient funds.
     def addPlant(self, x1, y1, x2, y2, dead_x1, dead_y1, dead_x2, dead_y2):
@@ -77,7 +78,8 @@ class generic(Crop):
         self.buyValue = 20     
         self.foodPerHourPerPlant = 5
         self.spriteFile = "assets\\green_plant.png"
-        self.spriteCoords = []        
+        self.spriteCoords = []   
+        self.thresh = 0     
 
 
 class uvResistant(Crop):
@@ -91,7 +93,8 @@ class uvResistant(Crop):
         self.buyValue = 25     
         self.foodPerHourPerPlant = 3.5        
         self.spriteFile = "assets\\red_plant.png"
-        self.spriteCoords = []       
+        self.spriteCoords = []   
+        self.thresh = 100    
 
 class coldResistant(Crop):
 
@@ -104,7 +107,8 @@ class coldResistant(Crop):
         self.buyValue = 25     
         self.foodPerHourPerPlant = 2
         self.spriteFile = "assets\\blue_plant.png"
-        self.spriteCoords = []               
+        self.spriteCoords = []      
+        self.thresh = 250         
 
 class hybrid(Crop):
 
@@ -117,7 +121,8 @@ class hybrid(Crop):
         self.buyValue = 30     
         self.foodPerHourPerPlant = 6.5 
         self.spriteFile = "assets\\potato.png"
-        self.spriteCoords = []           
+        self.spriteCoords = []   
+        self.thresh = 500        
 
 class cashcow(Crop):
 
@@ -132,7 +137,8 @@ class cashcow(Crop):
         self.buyValue = 30     
         self.foodPerHourPerPlant = 25    
         self.spriteFile = "assets\\cash_cow.png"
-        self.spriteCoords = []     
+        self.spriteCoords = [] 
+        self.thresh = 1000    
 
 class Context:
     # Maximum number of days that history is kept for
@@ -142,6 +148,10 @@ class Context:
     UV_MAPPING = {'Very_High': 4, 'High': 3, 'Moderate': 2, 'Low':1}
     # Resource Counters
     food = 50
+
+    totalfood = food
+
+    population = 0
 
     # Timing Constants
     tick = .1
@@ -183,17 +193,18 @@ class Context:
     dead_y2 = 0
 
         # define crop type objects. store as a list for easy iteration
-    crops = [
-        generic(),
+    crp = [
+        generic(),    
         coldResistant(),
         uvResistant(),
         hybrid(),
         cashcow()
     ]
 
+    crops = []
     cropDict = {}
 
-    for crop in crops:
+    for crop in crp:
         cropDict.update({crop.name: crop})
 
 
@@ -216,7 +227,14 @@ class Context:
     # plant sprites and stuff
     coords = []
 
+    def update_crops(self):
+            self.crops = []
+            for c in self.crp:
+                if c.thresh <= self.totalfood:
+                    self.crops.append(c)
+    
     def next_tick(self):
+        self.update_crops()
         self.tickCounter += 1
 
         if self.tickCounter >= Context.ticksPerMinute:
@@ -267,6 +285,7 @@ class Context:
             gainedFood += crop.getFoodPerTick(self.get_temp(), self.get_uv())
 
         self.food += gainedFood
+        self.totalfood += gainedFood
 
     def _handle_click_event(self, event, mouse):
         
@@ -280,6 +299,8 @@ class Context:
                     crop = self.cropDict[command[1]]
                     if crop.sellPlant():
                         self.food += crop.sellValue
+                        self.totalfood += crop.sellValue
+                    
 
                 elif command[0] == "buy":
                     crop = self.cropDict[command[1]]
@@ -289,6 +310,7 @@ class Context:
 
                 elif command[0]  == "click":
                     self.food += 1
+                    self.totalfood += 1
 
                 elif command[0] == "switch":
                     if command[1] == "portfolio":

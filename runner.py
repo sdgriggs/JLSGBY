@@ -225,6 +225,8 @@ if __name__ == '__main__':
 
 
         drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
+        drawText("Total Food Produced: " + str(f'{context.totalfood:.2f}') + " units", Context.white, bgc, 1150, 15, 20)
+        drawText("Total People Supported: " + str(f'{context.population}') + " People", Context.white, bgc, 1150, 65, 20)
         drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
         drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
         drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
