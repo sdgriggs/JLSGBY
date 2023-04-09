@@ -22,7 +22,7 @@ def drawText(text, textColor, bgColor, x, y, fsize):
     screen.blit(text, textRect)
     return textRect
 
-def drawGraph(title, x, y, width, height, color1, color2, data1, data2, screen):
+def drawGraph(title, x, y, width, height, color1, color2, data1, data2, screen, text_tag):
     if not len(data1) == len(data2):
         raise Exception("UGA BOOGA")
     
@@ -46,10 +46,13 @@ def drawGraph(title, x, y, width, height, color1, color2, data1, data2, screen):
             max_val = d
         if d < min_val:
             min_val = d
+
     x_start = x+5
     y_start = y + 40
     x_end = x_start + width - 10
     y_end = y_start + height - 58
+    drawText(str(max_val) + text_tag,pygame.Color(0,0,0), None, x + 12, y + 37, 10)
+    drawText(str(min_val) + text_tag,pygame.Color(0,0,0), None, x + 12, y_end - 13, 10)    
     for i in range(0, len(data1)):
         d1 = data1[i]
         d2 = data2[i]
@@ -64,6 +67,38 @@ def drawGraph(title, x, y, width, height, color1, color2, data1, data2, screen):
     pygame.draw.lines(screen, color2, False, points2, 2)
 
     
+def drawUVGraph(title, x, y, width, height, color1, data1, screen):
+
+    
+    pygame.draw.rect(screen, pygame.Color(225,225,245),pygame.Rect(x, y, width, height))
+    drawText(title, pygame.Color(0,0,0), None, x + 20, y + 5, 20)
+    pygame.draw.rect(screen, pygame.Color(0,0,0), pygame.Rect(x+5, y+5, 3, height - 10))
+    pygame.draw.rect(screen, pygame.Color(0,0,0), pygame.Rect(x+3, y + height - 18, width - 10, 3))
+    if(len(data1) < 2):
+        return
+    points1 = []
+    
+    max_val = data1[0]
+    min_val = data1[0]
+    for d in data1:
+        if d > max_val:
+            max_val = d
+        if d < min_val:
+            min_val = d
+    x_start = x+5
+    y_start = y + 40
+    x_end = x_start + width - 10
+    y_end = y_start + height - 58
+    drawText("Very High",pygame.Color(0,0,0), None, x + 12, y + 37, 10)
+    drawText("Low",pygame.Color(0,0,0), None, x + 12, y_end - 13, 10)  
+    for i in range(0, len(data1)):
+        d1 = data1[i]
+        divisor = 4
+        points1.append((x_start + (x_end - x_start ) / len(data1) * (i+1), y_end -
+                        (y_end - y_start)*d1/ divisor ))
+        
+
+    pygame.draw.lines(screen, color1, False, points1, 2)
 
 
  
@@ -159,9 +194,9 @@ if __name__ == '__main__':
         else:
 
             graph_x = infoObject.current_w / 4 * 3 + 7
-            drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
-            drawGraph("Pressure", graph_x ,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
-            drawGraph("UV Index", graph_x,580,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
+            drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen, " °C")
+            drawGraph("Pressure", graph_x ,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen, " Pa")
+            drawUVGraph("UV Index", graph_x,580,350,200, pygame.Color(191,64,191), context.uv, screen)
 
 
         # Discern good coords and dead zone
@@ -170,10 +205,10 @@ if __name__ == '__main__':
         context.win_y1 = 100
         context.win_y2 = infoObject.current_h
 
-        context.dead_x1 = 500
-        context.dead_x2 = 600
-        context.dead_y1 = 500
-        context.dead_y2 = 600
+        context.dead_x1 = img_rect.topleft[0]
+        context.dead_x2 = context.dead_x1 + img_rect.width
+        context.dead_y1 = img_rect.topleft[1]
+        context.dead_y2 = context.dead_y1 + img_rect.height
 
 
 
@@ -190,6 +225,8 @@ if __name__ == '__main__':
 
 
         drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
+        drawText("Total Food Produced: " + str(f'{context.totalfood:.2f}') + " units", Context.white, bgc, 1150, 15, 20)
+        drawText("Total People Supported: " + str(f'{context.population}') + " People", Context.white, bgc, 1150, 65, 20)
         drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
         drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
         drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
