@@ -144,8 +144,9 @@ if __name__ == '__main__':
                 rect = drawText(b, 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 20, 25)
                 quanRect = drawText(f"Quantity Owned: {context.crops[i].quantity}", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 50, 15)
                 costRect = drawText(f"Cost: {context.crops[i].buyValue} units", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 65, 15)
-                tempRect = drawText(f"Minimum Temperature: {context.crops[i].minGoodTemp}", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 80, 15)
+                tempRect = drawText(f"Minimum Temperature: {context.crops[i].minGoodTemp}C", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 80, 15)
                 uvRect = drawText(context.crops[i].getUvTolerance(), 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 95, 15)
+                fphRect = drawText(f'Food per Hour: {context.crops[i].foodPerHourPerPlant} units', 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 110, 15)
 
                 buyRect = drawText("    Buy    ", 'black', 'green', infoObject.current_w - 100,  125 * (i+1) + 50, 20)
                 context.append_click_region(buyRect.x, buyRect.y, buyRect.width, buyRect.height, "buy-" + b)
