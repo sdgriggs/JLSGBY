@@ -159,6 +159,19 @@ if __name__ == '__main__':
             drawGraph("Pressure", 1168,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
             drawGraph("UV Index", 1168,580,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
 
+
+        # Discern good coords and dead zone
+        context.win_x1 = 0
+        context.win_x2 = infoObject.current_w - right_pannel_width
+        context.win_y1 = 100
+        context.win_y2 = infoObject.current_h
+
+        context.dead_x1 = 500
+        context.dead_x2 = 600
+        context.dead_y1 = 500
+        context.dead_y2 = 600
+
+
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
         #pygame.draw.rect(screen, "white", pygame.Rect(infoObject.current_w / 2 - 200,infoObject.current_h / 2 - 100, 200, 200))
@@ -186,7 +199,15 @@ if __name__ == '__main__':
 
 
 
-
+        # Draw the plants!
+        for crop in context.crops:
+            for coords in crop.spriteCoords:
+                img = pygame.image.load(crop.spriteFile).convert_alpha()
+                img_rect = img.get_rect()
+                img_rect.centerx = coords[0]
+                img_rect.centery = coords[1]
+                screen.blit(img, img_rect)
+    
 
 
         # flip() the display to put your work on screen
