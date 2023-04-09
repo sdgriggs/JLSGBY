@@ -70,7 +70,7 @@ class uvResistant(Crop):
         self.name = "UV Resistant Plant"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -50      
-        self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}       
+        self.safeUvLevels = {"Very_High": False, "High": True, "Moderate": True, "Low":True}       
         self.sellValue = 15             
         self.buyValue = 25     
         self.foodPerHourPerPlant = 3.5        
@@ -173,7 +173,7 @@ class Context:
 
         if self.tickCounter >= Context.ticksPerMinute:
             self.tickCounter = 0
-            self.minNum += 60
+            self.minNum += 1
 
         if self.minNum >= Context.minPerHour:
             self.minNum = 0
