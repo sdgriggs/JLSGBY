@@ -41,7 +41,7 @@ class Crop:
 
     
     # Returns a brief string description for the crop.
-    def getDescription(self):
+    def getUvTolerance(self):
         uvTolerance = ""
         if self.safeUvLevels["High"]:
             uvTolerance += "High"
@@ -50,7 +50,7 @@ class Crop:
         elif self.safeUvLevels["Low"]:
             uvTolerance += "Low"
 
-        return f"{self.name} (Cost: {self.pricePerPlant}):\n\Minimum Temperature: {self.minGoodTemp}\nUV Tolerance: {uvTolerance}"
+        return f"UV Tolerance: {uvTolerance}"
     
 class generic(Crop):
 
@@ -58,7 +58,7 @@ class generic(Crop):
         self.name = "Generic Plant"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -50      
-        self.safeUvLevels = {"High": False, "Moderate": True, "Low":True}     
+        self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}     
         self.sellValue = 10              
         self.buyValue = 20     
         self.foodPerHourPerPlant = 5        
@@ -70,7 +70,7 @@ class uvResistant(Crop):
         self.name = "UV Resistant Plant"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -50      
-        self.safeUvLevels = {"High": True, "Moderate": True, "Low":True}     
+        self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}       
         self.sellValue = 15             
         self.buyValue = 25     
         self.foodPerHourPerPlant = 3.5        
@@ -81,7 +81,7 @@ class coldResistant(Crop):
         self.name = "Cold Resistant Plant"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -90      
-        self.safeUvLevels = {"High": False, "Moderate": True, "Low":True}     
+        self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}     
         self.sellValue = 15              
         self.buyValue = 25     
         self.foodPerHourPerPlant = 2        
@@ -92,7 +92,7 @@ class hybrid(Crop):
         self.name = "UV Resistant, Weak to Cold"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -30      
-        self.safeUvLevels = {"High": True, "Moderate": True, "Low":True}     
+        self.safeUvLevels = {"Very_High": False, "High": False, "Moderate": True, "Low":True}      
         self.sellValue = 15              
         self.buyValue = 30     
         self.foodPerHourPerPlant = 6.5        
@@ -161,6 +161,9 @@ class Context:
     hourNum = 0
 
     minNum = 0
+
+    # controls toggle gui
+    portfolioMode = True
 
     def next_tick(self):
         self.tickCounter += 1
@@ -257,6 +260,12 @@ class Context:
 
                 elif command[0]  == "click":
                     self.food += 1
+
+                elif command[0] == "switch":
+                    if command[1] == "portfolio":
+                        self.portfolioMode = True
+                    else:
+                        self.portfolioMode = False
 
     def init_click_regions(self):
         self.click_regions = []
