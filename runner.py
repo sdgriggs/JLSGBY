@@ -180,7 +180,6 @@ def show_help_screen():
 
     drawText("Start Game", "black", None, startBtnArea.x + startBtnArea.width / 3, startBtnArea.y + startBtnArea.height / 3, 25)
 
-
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
@@ -318,7 +317,7 @@ if __name__ == '__main__':
     pygame.init()
     infoObject = pygame.display.Info()
     screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h - 60))
-    pygame.display.set_caption("Marmer")
+    pygame.display.set_caption("Martianeer")
 
     screen.fill((0,0,0))
     clock = pygame.time.Clock()
