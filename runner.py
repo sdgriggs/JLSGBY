@@ -165,7 +165,7 @@ if __name__ == '__main__':
         else:
             drawGraph("Temps",1168,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
             drawGraph("Pressure", 1168,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
-            drawGraph("UV Index", 1168,580,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
+            drawGraph("UV Index", 1168,580,350,200, pygame.Color(191,64,191), pygame.Color(191,64,191), context.uv, context.uv, screen)
 
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
