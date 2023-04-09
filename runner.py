@@ -34,8 +34,8 @@ def drawGraph(title, x, y, width, height, color1, color2, data1, data2, screen):
         return
     points1 = []
     points2 = []
-    max_val = -9999999999
-    min_val = 9999999999
+    max_val = data1[0]
+    min_val = data1[0]
     for d in data1:
         if d > max_val:
             max_val = d
@@ -72,21 +72,14 @@ if __name__ == '__main__':
     pygame.init()
     infoObject = pygame.display.Info()
     screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h - 60))
-    screen.fill((255,0,255))
     pygame.display.set_caption("Marmer")
-    clock = pygame.time.Clock()
-    running = True
-
-
 
     screen.fill((0,0,0))
     clock = pygame.time.Clock()
     running = True
-    c = 0
     smallfont = pygame.font.SysFont('Rockwell',35)
 
     context = Context()
-    this_sol_data = {}
 
     while running:
 
@@ -155,9 +148,10 @@ if __name__ == '__main__':
 
 
         else:
-            drawGraph("Temps",1168,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
-            drawGraph("Pressure", 1168,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
-            drawGraph("UV Index", 1168,580,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
+            graph_x = infoObject.current_w / 4 * 3 + 7
+            drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen)
+            drawGraph("Pressure", graph_x ,360,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen)
+            drawGraph("UV Index", graph_x,580,350,200, pygame.Color(255,255,0), pygame.Color(255,255,0), context.uv, context.uv, screen)
 
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
