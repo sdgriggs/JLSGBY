@@ -97,7 +97,7 @@ class uvResistant(Crop):
         self.foodPerHourPerPlant = 3.5        
         self.spriteFile = "assets\\red_plant.png"
         self.spriteCoords = []   
-        self.thresh = 100    
+        self.thresh = 1000   
 
 class coldResistant(Crop):
 
@@ -111,7 +111,7 @@ class coldResistant(Crop):
         self.foodPerHourPerPlant = 2
         self.spriteFile = "assets\\blue_plant.png"
         self.spriteCoords = []      
-        self.thresh = 250         
+        self.thresh = 500         
 
 class hybrid(Crop):
 
@@ -125,7 +125,7 @@ class hybrid(Crop):
         self.foodPerHourPerPlant = 6.5 
         self.spriteFile = "assets\\potato.png"
         self.spriteCoords = []   
-        self.thresh = 500        
+        self.thresh = 5000       
 
 class cashcow(Crop):
 
@@ -141,7 +141,7 @@ class cashcow(Crop):
         self.foodPerHourPerPlant = 25    
         self.spriteFile = "assets\\cash_cow.png"
         self.spriteCoords = [] 
-        self.thresh = 1000    
+        self.thresh = 10000    
 
 class Context:
 
