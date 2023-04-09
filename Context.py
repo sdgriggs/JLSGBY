@@ -240,6 +240,8 @@ class Context:
         return self.current_env['pressure']
     
     def get_uv(self):
+        if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
+            return "Low"
         return self.current_env['uv_index']
     
     def get_sunrise(self):
