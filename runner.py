@@ -115,8 +115,7 @@ def drawPopup(title, message):
 
     drawText(title, 'black', None, 110, 125, 40)
     drawText(message, 'black', None, 110, 175, 20)
-    rect = drawText("Click Me To Exit", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
-    context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'exit')
+
 
 def show_title_screen():
 
@@ -331,10 +330,22 @@ def show_game_screen():
                 screen.blit(img, img_rect)
     
 
+        
+
         if context.first_person == "To-Show":
             drawPopup("Congratulations", "You have produced enough food to support a colony! People will begin arriving and eating your food, let's hope you don't get over-crowded...")
+            rect = drawText("Got it!", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
+            context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'exit')
             
-
+        if context.population > 10 and context.answer == 'Not-asked':
+            context.answer = 'Asked'
+        if context.population > 10 and context.answer == 'Asked':
+            context.answer = 'Asked'
+            drawPopup("Congratulations", "You have been offered the position of 'Head Farmer' at a new colony, will you leave your colony and start a new one?")
+            rect = drawText("Stay and Farm", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
+            context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'stay')
+            rect = drawText("Start a New Colony", 'black', None, infoObject.current_w - 600, infoObject.current_h /3 + 50, 20)
+            context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'leave')
 
         # flip() the display to put your work on screen
         pygame.display.flip()
