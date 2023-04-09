@@ -1,7 +1,7 @@
 import math
 import weather_data.soldata as soldata
-import crops as crops
 import random
+
 
 class Crop:
     def __init__(self):
@@ -169,6 +169,7 @@ class Context:
     pressure = []
     uv = []
 
+
     # define the crop window
     win_x1 = 0
     win_x2 = 0
@@ -180,6 +181,21 @@ class Context:
     dead_y1 = 0
     dead_y2 = 0
 
+        # define crop type objects. store as a list for easy iteration
+    crops = [
+        generic(),
+        coldResistant(),
+        uvResistant(),
+        hybrid(),
+        cashcow()
+    ]
+
+    cropDict = {}
+
+    for crop in crops:
+        cropDict.update({crop.name: crop})
+
+
     sol_data = soldata.getAggregatedSolData()
 
     current_env = soldata.getRandomizedSolData(0, sol_data)
@@ -188,7 +204,7 @@ class Context:
     yearNum = 1
     solNum = 1
 
-    hourNum = 23
+    hourNum = 8
 
     minNum = 0
 
@@ -214,11 +230,6 @@ class Context:
             self.hourNum = 0
             self.increment_sol()
 
-
-
-
-
-
     def get_temp(self):
         if 60 * self.hourNum + self.minNum < self.current_env['sunrise'] or 60 * self.hourNum + self.minNum > self.current_env['sunset']:
             return self.current_env['min_temp']
@@ -237,7 +248,6 @@ class Context:
     def get_sunset(self):
         return self._format_time(self.current_env['sunset'])
 
-
     def _format_time(self, min_since_midnight):
         hr = str(math.floor(min_since_midnight / 60))
         min = str(math.floor(min_since_midnight % 60))
@@ -247,21 +257,6 @@ class Context:
             min = '0' + min
         return hr + ":" + min
     
-
-    # define crop type objects. store as a list for easy iteration
-    crops = [
-        generic(),
-        coldResistant(),
-        uvResistant(),
-        hybrid(),
-        cashcow()
-    ]
-
-    cropDict = {}
-
-    for crop in crops:
-        cropDict.update({crop.name: crop})
-
     def doTickUpdate(self):
         gainedFood = 0
         for crop in self.crops:
@@ -269,9 +264,6 @@ class Context:
             gainedFood += crop.getFoodPerTick(self.get_temp(), self.get_uv())
 
         self.food += gainedFood
-
-
-
 
     def _handle_click_event(self, event, mouse):
 
@@ -312,7 +304,7 @@ class Context:
     def increment_sol(self):
         
         self.solNum += 1
-        if self.solNum >= Context.solPerYear:
+        if self.solNum > Context.solPerYear:
             self.solNum = 1
             self.yearNum += 1
         
