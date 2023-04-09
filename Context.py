@@ -1,5 +1,7 @@
 import math
-import weather_data as soldata
+import weather_data.soldata as soldata
+import crops as crops
+
 
 class Crop:
     def __init__(self):
@@ -34,7 +36,9 @@ class Crop:
         if not self.safeUvLevels[uvLevel]:
             valuePercent -= .5
 
-        return self.quantity * self.foodPerTickPerPlant * valuePercent
+
+        return self.quantity * self.foodPerHourPerPlant * valuePercent / Context.ticksPerHour
+
     
     # Returns a brief string description for the crop.
     def getDescription(self):
@@ -96,7 +100,9 @@ class hybrid(Crop):
 class cashcow(Crop):
 
     def __init__(self):
-        self.name = "UV Resistant, Weak to Cold"
+
+        self.name = "Cash cow"
+
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -10      
         self.safeUvLevels = {"High": False, "Moderate": False, "Low":True}     
@@ -108,7 +114,7 @@ class Context:
     # Maximum number of days that history is kept for
     MAX_HISTORY = 30
     # Resource Counters
-    food = 0
+    food = 50
 
     #......
     # probably some crop names here
@@ -117,7 +123,7 @@ class Context:
 
     # Timing Constants
     tick = .1
-    ticksPerMinute = 20
+    ticksPerMinute = 1
     ticksPerHour = 120
     ticksPerDay = 2880
     minuteIncrement = 10
@@ -143,6 +149,7 @@ class Context:
     uv = []
 
 
+
     sol_data = soldata.getAggregatedSolData()
 
     current_env = soldata.getRandomizedSolData(0, sol_data)
@@ -150,11 +157,14 @@ class Context:
     tickCounter = 0
     yearNum = 1
     solNum = 1
-    hourNum = 23
+
+    hourNum = 0
+
     minNum = 0
 
     def next_tick(self):
         self.tickCounter += 1
+
         if self.tickCounter >= Context.ticksPerMinute:
             self.tickCounter = 0
             self.minNum += 1
@@ -218,21 +228,43 @@ class Context:
     def doTickUpdate(self):
         gainedFood = 0
         for crop in self.crops:
+
             gainedFood += crop.getFoodPerTick(self.get_temp(), self.get_uv())
 
         self.food += gainedFood
 
 
 
+
     def _handle_click_event(self, event, mouse):
-        #for region in self.click_regions:
-        #    if 
-        pass
+
+        for region in self.click_regions:
+            #print(region['desc'])
+            #print(region['x'] <= mouse[0] <= region['x'] + region['width'])
+            #print(region['y'] <= mouse[0] <= region['y'] + region['height'])
+            if region['x'] <= mouse[0] <= region['x'] + region['width'] and region['y'] <= mouse[1] <= region['y'] + region['height']:
+
+                command = region['desc'].split('-')
+
+                crop = self.cropDict[command[0]]
+
+                if command[1] == "sell":
+                    if crop.sellPlant():
+                        self.food += crop.sellValue
+
+                elif command[1] == "buy":
+                    if self.food >= crop.buyValue:
+                        crop.addPlant()
+                        self.food -= crop.buyValue
+
+                else:
+                    print(command[1])
 
     def init_click_regions(self):
         self.click_regions = []
 
     def append_click_region(self, x, y, width, height, str):
+
 
         self.click_regions.append({'x':x, 'y':y, 'width':width, 'height':height, 'desc': str})
     
@@ -252,6 +284,7 @@ class Context:
 
         self.current_env = soldata.getRandomizedSolData(self.solNum - 1, self.sol_data)
     
+
 
 
     def get_time_string(self):

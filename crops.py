@@ -1,5 +1,3 @@
-import Context as Context
-
 class Crop:
     def __init__(self):
         self.name = "Parent crop."
@@ -33,7 +31,7 @@ class Crop:
         if not self.safeUvLevels[uvLevel]:
             valuePercent -= .5
 
-        return self.quantity * self.foodPerTickPerPlant * valuePercent
+        return self.quantity * self.foodPerHourPerPlant * valuePercent / Context.ticksPerHour
     
     # Returns a brief string description for the crop.
     def getDescription(self):
@@ -95,7 +93,7 @@ class hybrid(Crop):
 class cashcow(Crop):
 
     def __init__(self):
-        self.name = "UV Resistant, Weak to Cold"
+        self.name = "Cash cow"
         self.quantity = 0           # All start at 0 quantity.
         self.minGoodTemp = -10      
         self.safeUvLevels = {"High": False, "Moderate": False, "Low":True}     
