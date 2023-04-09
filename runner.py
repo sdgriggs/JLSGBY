@@ -3,7 +3,8 @@ import pygame.locals
 from Context import Context
 import time
 import weather_data.soldata
-
+from tkinter import *
+from tkinter import messagebox
 
 autoIncrement = 0 #(dummy value, will be calculated in increment function)
 
@@ -100,6 +101,15 @@ def drawUVGraph(title, x, y, width, height, color1, data1, screen):
 
     pygame.draw.lines(screen, color1, False, points1, 2)
 
+def drawPopup(title, message):
+    context.init_click_regions()
+
+    pygame.draw.rect(screen, pygame.Color(240, 231, 231), pygame.Rect(100,100,infoObject.current_w - 200,infoObject.current_h / 3))
+
+    drawText(title, 'black', None, 110, 125, 40)
+    drawText(message, 'black', None, 110, 175, 20)
+    rect = drawText("Click Me To Exit", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
+    context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'exit')
 
  
 if __name__ == '__main__':
@@ -112,6 +122,7 @@ if __name__ == '__main__':
     screen.fill((0,0,0))
     clock = pygame.time.Clock()
     running = True
+    first_person_disp = False
     smallfont = pygame.font.SysFont('Rockwell',35)
 
     context = Context()
@@ -245,7 +256,9 @@ if __name__ == '__main__':
                 img_rect.centery = coords[1]
                 screen.blit(img, img_rect)
     
-
+        if context.first_person == "To-Show":
+            drawPopup("Congratulations", "You have produced enough food to support a colony! People will begin arriving and eating your food, let's hope you don't get over-crowded...")
+            
 
         # flip() the display to put your work on screen
         pygame.display.flip()
