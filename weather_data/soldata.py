@@ -16,7 +16,10 @@ SOLS_IN_YEAR = 668
 
 #Returns the default json dictionary
 def getDefaultJson():
-    return json.load(open(DEFAULT_JSON_FP, "r"))
+    fp = open(DEFAULT_JSON_FP, "r")
+    out = json.load(fp)
+    fp.close()
+    return out
 
 #Aggregates sol data and returns it as a dictionary. Sols numbers are modded by 668
 #with 0 being the day curiosity touched down. Sunrise and sunset times are minute offsets

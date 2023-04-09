@@ -7,14 +7,11 @@ import weather_data.soldata
 from tkinter import *
 from tkinter import messagebox
 
-autoIncrement = 0 #(dummy value, will be calculated in increment function)
+import save_data.save as save
 
-def autominer():
-    global autoIncrement
-    # calculate the number to increment by based off number of crops, conditions, etc.
-
-    time.sleep(Context.tick)
-    context.doTickUpdate()
+def windowClose():
+    save.saveGame(context)
+    pygame.quit()
 
 def drawText(text, textColor, bgColor, x, y, fsize):
     font = pygame.font.SysFont('Rockwell', fsize)
@@ -170,7 +167,7 @@ def show_title_screen():
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
+            windowClose()
         if event.type == pygame.MOUSEBUTTONDOWN and startBtnArea.collidepoint(pygame.mouse.get_pos()):
             context.gameState = GameState.GAME
             return
@@ -201,7 +198,7 @@ def show_help_screen():
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
+            windowClose()
         if event.type == pygame.MOUSEBUTTONDOWN and startBtnArea.collidepoint(pygame.mouse.get_pos()):
             context.gameState = GameState.GAME
             return
@@ -213,10 +210,7 @@ def show_game_screen():
     global running
 
     while running:
-        autominer()
-
         # Update clock
-
         context.next_tick()
 
         # poll for events
@@ -362,7 +356,10 @@ if __name__ == '__main__':
     running = True
     smallfont = pygame.font.SysFont('Rockwell',35)
 
-    context = Context()
+    context = save.getSaveData()
+
+    if context == None:
+        context = Context()
 
     while running:
 
@@ -375,6 +372,6 @@ if __name__ == '__main__':
         elif context.gameState == GameState.GAME:
             show_game_screen()
        
-        clock.tick(60)  # limits FPS to 60
+        clock.tick(30)  # limits FPS to 30
 
-    pygame.quit()
+    windowClose()

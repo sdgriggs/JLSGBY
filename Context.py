@@ -144,9 +144,7 @@ class cashcow(Crop):
         self.thresh = 10000    
 
 class Context:
-
-    gameState = GameState.TITLE
-
+    #constants
     # Maximum number of days that history is kept for
     MAX_HISTORY = 30
 
@@ -157,18 +155,6 @@ class Context:
 
     ADTL_PERSON_THRESH = 500
 
-    first_person = "Insufficent-Food"
-    # Resource Counters
-    food = 50
-
-    totalfood = food
-
-    population = 0
-
-    gainedFood = 0
-    consumedFood = 0
-
-
     # Timing Constants
     tick = .1
     ticksPerMinute = 1
@@ -178,76 +164,85 @@ class Context:
 
     minPerHour = 60
     hourPerSol = 24
-    solPerYear = 668   
+    solPerYear = 668 
 
     # defining colors
-
     white = (255, 255, 255)
     black = (0, 0, 0)
 
+    #instance variable
+    def __init__(self):
+        self.gameState = GameState.TITLE
 
-    # define click regions
-    click_regions = []
+        self.first_person = "Insufficent-Food"
+    # Resource Counters
+        self.food = 0
+        self.totalfood = self.food
+        self.population = 0
+        self.gainedFood = 0
+        self.consumedFood = 0
 
+        # define click regions
+        self.click_regions = []
 
-    # define last 30 days of highs/lows/pressure/uv
-    highs = []
-    lows =  []
-    pressure = []
-    uv = []
-
-
-    # define the crop window
-    win_x1 = 0
-    win_x2 = 0
-    win_y1 = 0
-    win_y2 = 0
-    # define the clicking deadzone
-    dead_x1 = 0
-    dead_x2 = 0
-    dead_y1 = 0
-    dead_y2 = 0
-
-        # define crop type objects. store as a list for easy iteration
-    crp = [
-        generic(),    
-        coldResistant(),
-        uvResistant(),
-        hybrid(),
-        cashcow()
-    ]
-
-    crops = []
-    cropDict = {}
-
-    for crop in crp:
-        cropDict.update({crop.name: crop})
+        # define last 30 days of highs/lows/pressure/uv
+        self.highs = []
+        self.lows =  []
+        self.pressure = []
+        self.uv = []
 
 
-    sol_data = soldata.getAggregatedSolData()
+        # define the crop window
+        self.win_x1 = 0
+        self.win_x2 = 0
+        self.win_y1 = 0
+        self.win_y2 = 0
+        # define the clicking deadzone
+        self.dead_x1 = 0
+        self.dead_x2 = 0
+        self.dead_y1 = 0
+        self.dead_y2 = 0
 
-    #as long as we start after 1 prevTemp can be any placeholder value
-    prevTemp = 1
-    current_env = soldata.getRandomizedSolData(0, sol_data)
+            # define crop type objects. store as a list for easy iteration
+        self.crp = [
+            generic(),    
+            coldResistant(),
+            uvResistant(),
+            hybrid(),
+            cashcow()
+        ]
 
-    tickCounter = 0
-    yearNum = 1
-    solNum = 1
+        self.crops = []
+        self.cropDict = {}
 
-    hourNum = 8
-
-    minNum = 0
-
-    answer = 'Not-asked'
-
-    reset = False
-
-    # controls toggle gui
-    portfolioMode = True
+        for crop in self.crp:
+            self.cropDict.update({crop.name: crop})
 
 
-    # plant sprites and stuff
-    coords = []
+        self.sol_data = soldata.getAggregatedSolData()
+
+        #as long as we start after 1 prevTemp can be any placeholder value
+        self.prevTemp = 1
+        self.current_env = soldata.getRandomizedSolData(0, self.sol_data)
+
+        self.tickCounter = 0
+        self.yearNum = 1
+        self.solNum = 1
+
+        self.hourNum = 8
+        #min as in minutes
+        self.minNum = 0
+
+        self.answer = 'Not-asked'
+
+        self.reset = False
+
+        # controls toggle gui
+        self.portfolioMode = True
+
+
+        # plant sprites and stuff
+        self.coords = []
 
     def update_crops(self):
             self.crops = []
@@ -269,6 +264,7 @@ class Context:
     
     
     def next_tick(self):
+        self.doTickUpdate()
         self.update_crops()
         self.update_people()
         self.tickCounter += 1
@@ -441,9 +437,6 @@ class Context:
         #and now we update current_env
         self.current_env = soldata.getRandomizedSolData(self.solNum - 1, self.sol_data)
     
-
-
-
     def get_time_string(self):
         return f"Year {self.yearNum}, Sol {self.solNum}        {str(self.hourNum).zfill(2)}:{str(self.minNum - self.minNum % Context.minuteIncrement).zfill(2)}"
 
