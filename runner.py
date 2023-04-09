@@ -2,6 +2,7 @@ import pygame
 import pygame.locals
 from Context import Context
 import time
+import weather_data.soldata
 
 
 autoIncrement = 0 #(dummy value, will be calculated in increment function)
@@ -14,12 +15,36 @@ def autominer():
     context.doTickUpdate()
 
 def drawText(text, textColor, bgColor, x, y, fsize):
-    font = pygame.font.Font('freesansbold.ttf', fsize)
+    font = pygame.font.SysFont('Rockwell', fsize)
     text = font.render(text, True, textColor, bgColor)
     textRect = text.get_rect()
     textRect.topleft = (x, y)
     screen.blit(text, textRect)
 
+def drawGraph(title, x, y, width, height, color, data, screen):
+    pygame.draw.rect(screen, pygame.Color(255,255,255),pygame.Rect(x, y, width, height))
+    drawText(title, color, pygame.Color(255,255,255), x + 20, y + 5, 20)
+    pygame.draw.rect(screen, color, pygame.Rect(x+5, y+5, 3, height - 10))
+    pygame.draw.rect(screen, color, pygame.Rect(x+3, y + height - 18, width - 10, 3))
+    points = []
+    max_val = -9999999999
+    min_val = 9999999999
+    for d in data:
+        if d > max_val:
+            max_val = d
+        if d < min_val:
+            min_val = d
+    x_start = x+5
+    y_start = y + 40
+    x_end = x_start + width - 10
+    y_end = y_start + height - 58
+    for i in range(0, len(data)):
+        d = data[i]
+        points.append((x_start + (x_end - x_start ) / len(data) * (i+1), y_end -
+                        (y_end - y_start)*(d - min_val)/(max_val - min_val)  ))
+    pygame.draw.lines(screen, color, False, points, 2)
+
+    
 
 
  
@@ -32,21 +57,17 @@ if __name__ == '__main__':
     pygame.display.set_caption("Marmer")
     clock = pygame.time.Clock()
     running = True
-    c = 0
 
-    tickCounter = 0
-    yearNum = 1
-    solNum = 1
-    hourNum = 0
-    minNum = 0
+
 
     screen.fill((0,0,0))
     clock = pygame.time.Clock()
     running = True
     c = 0
-    smallfont = pygame.font.SysFont('Corbel',35)
+    smallfont = pygame.font.SysFont('Rockwell',35)
 
     context = Context()
+    this_sol_data = {}
 
     while running:
 
@@ -54,24 +75,9 @@ if __name__ == '__main__':
 
         # Update clock
 
-        tickCounter += 1
-        if tickCounter == Context.ticksPerMinute:
-            tickCounter = 0
-            minNum += 1
+        context.next_tick()
 
-        if minNum == Context.minPerHour:
-            minNum = 0
-            hourNum += 1
 
-        if hourNum == Context.hourPerSol:
-            hourNum = 0
-            solNum += 1
-
-        if solNum == Context.solPerYear:
-            solNum = 1
-            yearNum += 1
-
-        timeString = f"Year {yearNum}, Sol {solNum}        {str(hourNum).zfill(2)}:{str(minNum - minNum % Context.minuteIncrement).zfill(2)}"
 
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
@@ -80,12 +86,12 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 context._handle_click_event(event, pygame.mouse.get_pos())
-
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(pygame.Color(240,231,231))
         
 
         # RENDER YOUR GAME HERE
+
 
         #Left information pannel
         left_pannel_width = infoObject.current_w /4 * 3
@@ -131,15 +137,21 @@ if __name__ == '__main__':
 
         #TOP Status Bar
         bgc = pygame.Color(69,24,4)
-        pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100))
 
-        drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, None, 850, 15, 20)
-        drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, None, 500, 65, 20)
-        drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, None, 500, 15, 20)
-        drawText(f"Current UV index: {context.get_uv()} ", Context.white, None, 850, 65, 20)
-        drawText(f"Sunrise: {context.get_sunrise()}", Context.white, None, 300, 15, 20)
-        drawText(f"Sunset: {context.get_sunset()}", Context.white, None, 300, 65, 20)
-        drawText(timeString, Context.white, None, 25, 40, 20)
+        pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100), border_bottom_left_radius=25, border_bottom_right_radius=25)
+
+
+        drawGraph("High Temps", 1168,120,350,200, pygame.Color(0,0,0), context.highs, screen)
+
+        drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
+        drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
+        drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
+        drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
+        drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
+        drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
+        drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
+
+
 
 
 
