@@ -1,6 +1,7 @@
 import pygame
 import pygame.locals
 from Context import Context
+from Context import GameState
 import time
 import weather_data.soldata
 from tkinter import *
@@ -68,6 +69,12 @@ def drawGraph(title, x, y, width, height, color1, color2, data1, data2, screen, 
     pygame.draw.lines(screen, color2, False, points2, 2)
 
     
+
+def draw_rect_alpha(surface, color, rect):
+    shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
+    pygame.draw.rect(shape_surf, color, shape_surf.get_rect(), border_radius=10)
+    surface.blit(shape_surf, rect)
+
 def drawUVGraph(title, x, y, width, height, color1, data1, screen):
 
     
@@ -111,13 +118,12 @@ def drawPopup(title, message):
     rect = drawText("Click Me To Exit", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
     context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'exit')
 
- 
-if __name__ == '__main__':
+def show_title_screen():
 
-    pygame.init()
-    infoObject = pygame.display.Info()
-    screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h - 60))
-    pygame.display.set_caption("Marmer")
+    img = pygame.image.load("assets\\rover_bg.jpg").convert()
+    img_rect = img.get_rect()
+    screen.blit(img, img_rect)
+
 
     screen.fill((0,0,0))
     clock = pygame.time.Clock()
@@ -125,11 +131,89 @@ if __name__ == '__main__':
     first_person_disp = False
     smallfont = pygame.font.SysFont('Rockwell',35)
 
-    context = Context()
+    titleText = pygame.image.load("assets\\title_white.png").convert_alpha()
+    text_rect = titleText.get_rect()
+
+
+    text_rect.topleft = (infoObject.current_w / 16, infoObject.current_h / 8)
+
+    screen.blit(titleText, text_rect)
+
+    subText = pygame.image.load("assets\\subtitle_white.png").convert_alpha()
+    sub_rect = titleText.get_rect()
+
+    sub_rect.topleft = (7 * infoObject.current_w / 32, 3 * infoObject.current_h / 8)
+
+    screen.blit(subText, sub_rect)
+
+
+    # Start with the start button. A very good place to start.
+    startBtnArea = pygame.Rect(2 * infoObject.current_w / 8, 9 * infoObject.current_h / 16, infoObject.current_w / 4, infoObject.current_h / 8 )
+
+    if startBtnArea.collidepoint(pygame.mouse.get_pos()):
+        draw_rect_alpha(screen, (255, 255, 255, 180), startBtnArea)
+    else:
+        draw_rect_alpha(screen, (255, 255, 255, 127), startBtnArea)
+
+    drawText("Start Game", "black", None, startBtnArea.x + startBtnArea.width / 3, startBtnArea.y + startBtnArea.height / 3, 25)
+
+    # Start with the start button. A very good place to start.
+    helpBtnArea = pygame.Rect(2 * infoObject.current_w / 8, 12 * infoObject.current_h / 16, infoObject.current_w / 4, infoObject.current_h / 8 )
+
+    if helpBtnArea.collidepoint(pygame.mouse.get_pos()):
+        draw_rect_alpha(screen, (255, 255, 255, 180), helpBtnArea)
+    else:
+        draw_rect_alpha(screen, (255, 255, 255, 127), helpBtnArea)
+
+    drawText("How To Play", "black", None, helpBtnArea.x + helpBtnArea.width / 3, helpBtnArea.y + helpBtnArea.height / 3, 25)
+
+    # poll for events
+    # pygame.QUIT event means the user clicked X to close your window
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONDOWN and startBtnArea.collidepoint(pygame.mouse.get_pos()):
+            context.gameState = GameState.GAME
+            return
+        if event.type == pygame.MOUSEBUTTONDOWN and helpBtnArea.collidepoint(pygame.mouse.get_pos()):
+            context.gameState = GameState.HELP
+            return
+
+    # flip() the display to put your work on screen
+    pygame.display.flip()
+
+def show_help_screen():
+    
+    img = pygame.image.load("assets\\help_bg.jpg").convert()
+    img_rect = img.get_rect()
+    screen.blit(img, img_rect)
+
+    # Start with the start button. A very good place to start.
+    startBtnArea = pygame.Rect(2 * infoObject.current_w / 8, 12 * infoObject.current_h / 16, infoObject.current_w / 4, infoObject.current_h / 8 )
+
+    if startBtnArea.collidepoint(pygame.mouse.get_pos()):
+        draw_rect_alpha(screen, (255, 255, 255, 180), startBtnArea)
+    else:
+        draw_rect_alpha(screen, (255, 255, 255, 127), startBtnArea)
+
+    drawText("Start Game", "black", None, startBtnArea.x + startBtnArea.width / 3, startBtnArea.y + startBtnArea.height / 3, 25)
+
+    # poll for events
+    # pygame.QUIT event means the user clicked X to close your window
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONDOWN and startBtnArea.collidepoint(pygame.mouse.get_pos()):
+            context.gameState = GameState.GAME
+            return
+        
+    # flip() the display to put your work on screen
+    pygame.display.flip()
+
+def show_game_screen():
+    global running
 
     while running:
-
-
         autominer()
 
         # Update clock
@@ -145,10 +229,8 @@ if __name__ == '__main__':
                 context._handle_click_event(event, pygame.mouse.get_pos())
         # fill the screen with a color to wipe away anything from last frame
         screen.fill(pygame.Color(240,231,231))
-        
 
         # RENDER YOUR GAME HERE
-
 
         #Left information pannel
         left_pannel_width = infoObject.current_w /4 * 3
@@ -157,9 +239,6 @@ if __name__ == '__main__':
         img_rect = img.get_rect()
 
         screen.blit(img, img_rect)
-
-
-        
 
         #Right information pannel
         right_pannel_width = infoObject.current_w /4 
@@ -221,19 +300,13 @@ if __name__ == '__main__':
         context.dead_y1 = img_rect.topleft[1]
         context.dead_y2 = context.dead_y1 + img_rect.height
 
-
-
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
-
-        #pygame.draw.rect(screen, "white", pygame.Rect(infoObject.current_w / 2 - 200,infoObject.current_h / 2 - 100, 200, 200))
-
 
         #TOP Status Bar
         bgc = pygame.Color(69,24,4)
 
 
         pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100))
-
 
         drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
         drawText("Total Food Produced: " + str(f'{context.totalfood:.2f}') + " units", Context.white, bgc, 1150, 15, 20)
@@ -245,8 +318,6 @@ if __name__ == '__main__':
         drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
         drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
 
-
-
         # Draw the plants!
         for crop in context.crops:
             for coords in crop.spriteCoords:
@@ -256,14 +327,40 @@ if __name__ == '__main__':
                 img_rect.centery = coords[1]
                 screen.blit(img, img_rect)
     
+
         if context.first_person == "To-Show":
             drawPopup("Congratulations", "You have produced enough food to support a colony! People will begin arriving and eating your food, let's hope you don't get over-crowded...")
             
 
+
         # flip() the display to put your work on screen
         pygame.display.flip()
+ 
+if __name__ == '__main__':
 
-        
+    pygame.init()
+    infoObject = pygame.display.Info()
+    screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h - 60))
+    pygame.display.set_caption("Marmer")
+
+    screen.fill((0,0,0))
+    clock = pygame.time.Clock()
+    running = True
+    smallfont = pygame.font.SysFont('Rockwell',35)
+
+    context = Context()
+
+    while running:
+
+        if context.gameState == GameState.TITLE:
+            show_title_screen()
+            
+        elif context.gameState == GameState.HELP:
+            show_help_screen()
+
+        elif context.gameState == GameState.GAME:
+            show_game_screen()
+       
         clock.tick(60)  # limits FPS to 60
 
     pygame.quit()
