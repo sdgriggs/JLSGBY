@@ -383,7 +383,7 @@ class Context:
                 elif command[0] == "buy":
                     crop = self.cropDict[command[1]]
                     if self.food >= crop.buyValue:
-                        print(crop.addPlant(self.win_x1, self.win_y1, self.win_x2, self.win_y2, self.dead_x1, self.dead_y1, self.dead_x2, self.dead_y2))
+                        crop.addPlant(self.win_x1, self.win_y1, self.win_x2, self.win_y2, self.dead_x1, self.dead_y1, self.dead_x2, self.dead_y2)
                         self.food -= crop.buyValue
                         
                     self.bought_plants = True
