@@ -306,6 +306,8 @@ def show_game_screen():
 
         img_rect = drawIceCream(context)
         left_pannel_width = infoObject.current_w /4 * 3
+
+        #stuff to do on frames where plants are bought or sold (define good regions)
         if context.sold_plants or context.bought_plants:
             
             field = pygame.Rect(0, 100, left_pannel_width, infoObject.current_h)
@@ -322,7 +324,7 @@ def show_game_screen():
             context.dead_x2 = context.dead_x1 + img_rect.width
             context.dead_y1 = img_rect.topleft[1]
             context.dead_y2 = context.dead_y1 + img_rect.height
-        # Draw the plants!
+        # Draw the plants! (must be done for all plants if sold)
         if context.sold_plants:
             img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert_alpha()
             img = pygame.transform.scale(img, (left_pannel_width,infoObject.current_h - 10))
@@ -341,8 +343,10 @@ def show_game_screen():
                     screen.blit(img, img_rect)
 
             context.sold_plants = False
+        # only draw the new plants that are purchaced
         elif context.bought_plants:
             for crop in context.crops:
+                #iterate over the newly purchaced crop cords
                 for i in range(len(crop.spriteCoords) - crop.to_show, len(crop.spriteCoords)):
                     coords = crop.spriteCoords[i]
                     img = pygame.image.load(crop.spriteFile).convert_alpha()
