@@ -22,6 +22,7 @@ class Crop:
         self.spriteFile = ""
         self.spriteCoords = []
         self.thresh = 0
+        self.to_show = 0
 
     # Increases the number of plants of this crop by one. It is the implementing function's responsibility to check that there are sufficient funds.
     def addPlant(self, x1, y1, x2, y2, dead_x1, dead_y1, dead_x2, dead_y2):
@@ -33,6 +34,7 @@ class Crop:
         while dead_x1 <= coords[0] <= dead_x2 and dead_y1 <= coords[1] <= dead_y2:
             coords = [random.randint(x1, x2), random.randint(y1, y2)]
 
+        self.to_show += 1
         self.spriteCoords.append(coords)
 
     # Decreases the number of plants, if possible. Returns true on a success and false on a failure.
@@ -82,7 +84,8 @@ class generic(Crop):
         self.foodPerHourPerPlant = 5
         self.spriteFile = "assets\\green_plant.png"
         self.spriteCoords = []   
-        self.thresh = 0     
+        self.thresh = 0   
+        self.to_show = 0  
 
 
 class uvResistant(Crop):
@@ -97,7 +100,8 @@ class uvResistant(Crop):
         self.foodPerHourPerPlant = 3.5        
         self.spriteFile = "assets\\red_plant.png"
         self.spriteCoords = []   
-        self.thresh = 1000   
+        self.thresh = 1000 
+        self.to_show = 0  
 
 class coldResistant(Crop):
 
@@ -111,7 +115,8 @@ class coldResistant(Crop):
         self.foodPerHourPerPlant = 2
         self.spriteFile = "assets\\blue_plant.png"
         self.spriteCoords = []      
-        self.thresh = 500         
+        self.thresh = 500  
+        self.to_show = 0       
 
 class hybrid(Crop):
 
@@ -125,7 +130,8 @@ class hybrid(Crop):
         self.foodPerHourPerPlant = 7.5 
         self.spriteFile = "assets\\potato.png"
         self.spriteCoords = []   
-        self.thresh = 5000       
+        self.thresh = 5000 
+        self.to_show = 0      
 
 class cashcow(Crop):
 
@@ -141,7 +147,8 @@ class cashcow(Crop):
         self.foodPerHourPerPlant = 25    
         self.spriteFile = "assets\\cash_cow.png"
         self.spriteCoords = [] 
-        self.thresh = 10000    
+        self.thresh = 10000 
+        self.to_show = 0   
 
 class Context:
     #constants
@@ -242,12 +249,14 @@ class Context:
         # controls toggle gui
         self.portfolioMode = True
 
-        self.updated_plants = True
+        self.sold_plants = True
+        self.bought_plants = True
 
 
         # plant sprites and stuff
         self.coords = []
 
+        self.new_plants = 0
         
 
     def update_crops(self):
@@ -356,6 +365,7 @@ class Context:
 
     def _handle_click_event(self, event, mouse):
         
+        self.new_plants = 0
         for region in self.click_regions:
             
             if region['x'] <= mouse[0] <= region['x'] + region['width'] and region['y'] <= mouse[1] <= region['y'] + region['height']:
@@ -367,15 +377,16 @@ class Context:
                     if crop.sellPlant():
                         self.food += crop.sellValue
                         self.totalfood += crop.sellValue
-                    self.updated_plants = True
+                    self.sold_plants = True
                     
 
                 elif command[0] == "buy":
                     crop = self.cropDict[command[1]]
                     if self.food >= crop.buyValue:
-                        crop.addPlant(self.win_x1, self.win_y1, self.win_x2, self.win_y2, self.dead_x1, self.dead_y1, self.dead_x2, self.dead_y2)
+                        print(crop.addPlant(self.win_x1, self.win_y1, self.win_x2, self.win_y2, self.dead_x1, self.dead_y1, self.dead_x2, self.dead_y2))
                         self.food -= crop.buyValue
-                    self.updated_plants = True
+                        
+                    self.bought_plants = True
 
                 elif command[0]  == "click":
                     
@@ -405,7 +416,7 @@ class Context:
                     self.food = 0
                     self.first_person = "Insufficent-Food"
                     self.answer = "Not-asked"
-                print("Clicked")
+              
 
     def init_click_regions(self):
         self.click_regions = []

@@ -305,18 +305,12 @@ def show_game_screen():
         drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
 
         img_rect = drawIceCream(context)
-
-        # Draw the plants!
-        if context.updated_plants:
-            left_pannel_width = infoObject.current_w /4 * 3
+        left_pannel_width = infoObject.current_w /4 * 3
+        if context.sold_plants or context.bought_plants:
+            
             field = pygame.Rect(0, 100, left_pannel_width, infoObject.current_h)
-            img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert_alpha()
-            img = pygame.transform.scale(img, (left_pannel_width,infoObject.current_h - 10))
 
-            #pygame.draw.rect(screen, pygame.Color(255,255,255), field)
-            screen.blit(img, (0,100))
-
-            print(context.click_regions)
+           
 
             # Discern good coords and dead zone
             context.win_x1 = 0
@@ -328,6 +322,14 @@ def show_game_screen():
             context.dead_x2 = context.dead_x1 + img_rect.width
             context.dead_y1 = img_rect.topleft[1]
             context.dead_y2 = context.dead_y1 + img_rect.height
+        # Draw the plants!
+        if context.sold_plants:
+            img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert_alpha()
+            img = pygame.transform.scale(img, (left_pannel_width,infoObject.current_h - 10))
+
+            #pygame.draw.rect(screen, pygame.Color(255,255,255), field)
+            screen.blit(img, (0,100))
+
 
             #screen.blit(img, img_rect)
             for crop in context.crops:
@@ -338,8 +340,22 @@ def show_game_screen():
                     img_rect.centery = coords[1]
                     screen.blit(img, img_rect)
 
-            print("Logged")
-            context.updated_plants = False
+            context.sold_plants = False
+        elif context.bought_plants:
+            for crop in context.crops:
+                for i in range(len(crop.spriteCoords) - crop.to_show, len(crop.spriteCoords)):
+                    coords = crop.spriteCoords[i]
+                    img = pygame.image.load(crop.spriteFile).convert_alpha()
+                    img_rect = img.get_rect()
+                    img_rect.centerx = coords[0]
+                    img_rect.centery = coords[1]
+                    screen.blit(img, img_rect)
+                crop.to_show = 0
+            
+            context.bought_plants = False
+            
+
+        
         img_rect = drawIceCream(context)
 
         
