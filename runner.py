@@ -6,8 +6,13 @@ import time
 import weather_data.soldata
 from tkinter import *
 from tkinter import messagebox
+import GameInfo
 
 import save_data.save as save
+
+def stopRunning():
+    global running
+    running = False
 
 def windowClose():
     save.saveGame(context)
@@ -130,13 +135,6 @@ def show_title_screen():
     img_rect = img.get_rect()
     screen.blit(img, img_rect)
 
-
-
-    clock = pygame.time.Clock()
-    running = True
-    first_person_disp = False
-    smallfont = pygame.font.SysFont('Rockwell',35)
-
     titleText = pygame.image.load("assets\\title_white.png").convert_alpha()
     text_rect = titleText.get_rect()
 
@@ -177,7 +175,7 @@ def show_title_screen():
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            windowClose()
+            stopRunning()
         if event.type == pygame.MOUSEBUTTONDOWN and startBtnArea.collidepoint(pygame.mouse.get_pos()):
             context.gameState = GameState.GAME
             return
@@ -208,7 +206,7 @@ def show_help_screen():
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            windowClose()
+            stopRunning()
         if event.type == pygame.MOUSEBUTTONDOWN and startBtnArea.collidepoint(pygame.mouse.get_pos()):
             context.gameState = GameState.GAME
             return
@@ -218,169 +216,167 @@ def show_help_screen():
 
 def show_game_screen():
     global running
+    # Update clock
+    context.next_tick()
 
-    while running:
-        # Update clock
-        context.next_tick()
+    # poll for events
+    # pygame.QUIT event means the user clicked X to close your window
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            stopRunning()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            context._handle_click_event(event, pygame.mouse.get_pos())
+    # fill the screen with a color to wipe away anything from last frame
+    #screen.fill(pygame.Color(240,231,231))
 
-        # poll for events
-        # pygame.QUIT event means the user clicked X to close your window
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                context._handle_click_event(event, pygame.mouse.get_pos())
-        # fill the screen with a color to wipe away anything from last frame
-        #screen.fill(pygame.Color(240,231,231))
+    # RENDER YOUR GAME HERE
 
-        # RENDER YOUR GAME HERE
+    #Left information pannel
+    
 
-        #Left information pannel
+    #Right information pannel
+    right_pannel_width = infoObject.current_w /4 
+    pygame.draw.rect(screen, pygame.Color(253,166,0), pygame.Rect(infoObject.current_w - right_pannel_width, 0, right_pannel_width, infoObject.current_h))
+
+    #Allocate the areas where clicks are valid
+    context.init_click_regions()
+
+    # Make our toggle buttons
+
+
+    # Plant Portfolio Button
+    pbRect = drawText("  Plant Portfolio  ", 'black', 'white', infoObject.current_w - right_pannel_width + 20, 110, 20)
+    context.append_click_region(pbRect.x, pbRect.y, pbRect.width, pbRect.height, "switch-portfolio")
+
+    # Graphs Button
+    pbRect = drawText("  Stats and Trends ", 'black', 'white', infoObject.current_w - right_pannel_width / 2 + 10, 110, 20)
+    context.append_click_region(pbRect.x, pbRect.y, pbRect.width, pbRect.height, "switch-graphs")
+
+    if context.portfolioMode:
+        for i in range(0, len(context.crops)):
+            b = context.crops[i].name
+            rect = drawText(b, 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 20, 25)
+            quanRect = drawText(f"Quantity Owned: {context.crops[i].quantity}", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 50, 15)
+            costRect = drawText(f"Cost: {context.crops[i].buyValue} units", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 65, 15)
+            tempRect = drawText(f"Minimum Temperature: {context.crops[i].minGoodTemp}C", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 80, 15)
+            uvRect = drawText(context.crops[i].getUvTolerance(), 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 95, 15)
+            fphRect = drawText(f'Food per Hour: {context.crops[i].foodPerHourPerPlant} units', 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 110, 15)
+
+            buyRect = drawText("    Buy    ", 'black', 'green', infoObject.current_w - 100,  125 * (i+1) + 50, 20)
+            context.append_click_region(buyRect.x, buyRect.y, buyRect.width, buyRect.height, "buy-" + b)
+
+            sellRect = drawText("    Sell    ", 'black', 'red', infoObject.current_w - 100,  125 * (i+1) + 80, 20)
+            context.append_click_region(sellRect.x, sellRect.y, sellRect.width, sellRect.height, "sell-" + b)
+
+
+    else:
+
+        graph_x = infoObject.current_w / 4 * 3 + 7
+        drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen, " °C")
+        #drawGraph("Pressure", graph_x ,580,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen, " Pa")
+        drawUVGraph("UV Index", graph_x,360,350,200, pygame.Color(191,64,191), context.uv, screen)
+        drawText(f"Production Per Hour:  {context.get_production():.2f}", 'black', None, graph_x, 580, 25)
+        drawText(f"Consumption Per Hour: {context.get_consumption():.2f}", 'black', None, graph_x, 620, 25)
+        drawText(f"Net Food Per Hour:    {context.get_net():.2f}", 'black', None, graph_x, 660, 25)
+
+
+
+
+    pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
+
+    #TOP Status Bar
+    bgc = pygame.Color(69,24,4)
+
+
+    pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100))
+
+    drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
+    drawText("Total Food Produced: " + str(f'{context.totalfood:.2f}') + " units", Context.white, bgc, 1150, 15, 20)
+    drawText("Total People Supported: " + str(f'{context.population}') + " People", Context.white, bgc, 1150, 65, 20)
+    drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
+    drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
+    drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
+    drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
+    drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
+    drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
+
+    img_rect = drawIceCream(context)
+    left_pannel_width = infoObject.current_w /4 * 3
+
+    #stuff to do on frames where plants are bought or sold (define good regions)
+    if context.sold_plants or context.bought_plants:
         
-
-        #Right information pannel
-        right_pannel_width = infoObject.current_w /4 
-        pygame.draw.rect(screen, pygame.Color(253,166,0), pygame.Rect(infoObject.current_w - right_pannel_width, 0, right_pannel_width, infoObject.current_h))
-
-        #Allocate the areas where clicks are valid
-        context.init_click_regions()
-
-        # Make our toggle buttons
-
-
-        # Plant Portfolio Button
-        pbRect = drawText("  Plant Portfolio  ", 'black', 'white', infoObject.current_w - right_pannel_width + 20, 110, 20)
-        context.append_click_region(pbRect.x, pbRect.y, pbRect.width, pbRect.height, "switch-portfolio")
-
-        # Graphs Button
-        pbRect = drawText("  Stats and Trends ", 'black', 'white', infoObject.current_w - right_pannel_width / 2 + 10, 110, 20)
-        context.append_click_region(pbRect.x, pbRect.y, pbRect.width, pbRect.height, "switch-graphs")
-
-        if context.portfolioMode:
-            for i in range(0, len(context.crops)):
-                b = context.crops[i].name
-                rect = drawText(b, 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 20, 25)
-                quanRect = drawText(f"Quantity Owned: {context.crops[i].quantity}", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 50, 15)
-                costRect = drawText(f"Cost: {context.crops[i].buyValue} units", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 65, 15)
-                tempRect = drawText(f"Minimum Temperature: {context.crops[i].minGoodTemp}C", 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 80, 15)
-                uvRect = drawText(context.crops[i].getUvTolerance(), 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 95, 15)
-                fphRect = drawText(f'Food per Hour: {context.crops[i].foodPerHourPerPlant} units', 'white', None, infoObject.current_w - right_pannel_width + 25, 125 * (i+1) + 110, 15)
-
-                buyRect = drawText("    Buy    ", 'black', 'green', infoObject.current_w - 100,  125 * (i+1) + 50, 20)
-                context.append_click_region(buyRect.x, buyRect.y, buyRect.width, buyRect.height, "buy-" + b)
-
-                sellRect = drawText("    Sell    ", 'black', 'red', infoObject.current_w - 100,  125 * (i+1) + 80, 20)
-                context.append_click_region(sellRect.x, sellRect.y, sellRect.width, sellRect.height, "sell-" + b)
-
-
-        else:
-
-            graph_x = infoObject.current_w / 4 * 3 + 7
-            drawGraph("Temps", graph_x,140,350,200, pygame.Color(255,0,0), pygame.Color(0,0,255), context.highs, context.lows, screen, " °C")
-            #drawGraph("Pressure", graph_x ,580,350,200, pygame.Color(0,255,0), pygame.Color(0,255,0), context.pressure, context.pressure, screen, " Pa")
-            drawUVGraph("UV Index", graph_x,360,350,200, pygame.Color(191,64,191), context.uv, screen)
-            drawText(f"Production Per Hour:  {context.get_production():.2f}", 'black', None, graph_x, 580, 25)
-            drawText(f"Consumption Per Hour: {context.get_consumption():.2f}", 'black', None, graph_x, 620, 25)
-            drawText(f"Net Food Per Hour:    {context.get_net():.2f}", 'black', None, graph_x, 660, 25)
-
-
-
-
-        pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
-
-        #TOP Status Bar
-        bgc = pygame.Color(69,24,4)
-
-
-        pygame.draw.rect(screen, pygame.Color(69,24,4), pygame.Rect(0,0,infoObject.current_w, 100))
-
-        drawText("Avaliable Food: " + str(f'{context.food:.2f}') + " units", Context.white, bgc, 850, 15, 20)
-        drawText("Total Food Produced: " + str(f'{context.totalfood:.2f}') + " units", Context.white, bgc, 1150, 15, 20)
-        drawText("Total People Supported: " + str(f'{context.population}') + " People", Context.white, bgc, 1150, 65, 20)
-        drawText(f"Current Air Temp: {context.get_temp():.2f} °C", Context.white, bgc, 500, 65, 20)
-        drawText(f"Current Air Pressure: {context.get_pressure():.2f} Pa", Context.white, bgc, 500, 15, 20)
-        drawText(f"Current UV index: {context.get_uv()} ", Context.white, bgc, 850, 65, 20)
-        drawText(f"Sunrise: {context.get_sunrise()}", Context.white, bgc, 300, 15, 20)
-        drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
-        drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
-
-        img_rect = drawIceCream(context)
-        left_pannel_width = infoObject.current_w /4 * 3
-
-        #stuff to do on frames where plants are bought or sold (define good regions)
-        if context.sold_plants or context.bought_plants:
-            
-            field = pygame.Rect(0, 100, left_pannel_width, infoObject.current_h)
-
-           
-
-            # Discern good coords and dead zone
-            context.win_x1 = 0
-            context.win_x2 = infoObject.current_w - right_pannel_width - 50
-            context.win_y1 = 110
-            context.win_y2 = infoObject.current_h - 25
-
-            context.dead_x1 = img_rect.topleft[0]
-            context.dead_x2 = context.dead_x1 + img_rect.width
-            context.dead_y1 = img_rect.topleft[1]
-            context.dead_y2 = context.dead_y1 + img_rect.height
-        # Draw the plants! (must be done for all plants if sold)
-        if context.sold_plants:
-            img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert_alpha()
-            img = pygame.transform.scale(img, (left_pannel_width,infoObject.current_h - 10))
-
-            #pygame.draw.rect(screen, pygame.Color(255,255,255), field)
-            screen.blit(img, (0,100))
-
-
-            #screen.blit(img, img_rect)
-            for crop in context.crops:
-                for coords in crop.spriteCoords:
-                    img = pygame.image.load(crop.spriteFile).convert_alpha()
-                    img_rect = img.get_rect()
-                    img_rect.centerx = coords[0]
-                    img_rect.centery = coords[1]
-                    screen.blit(img, img_rect)
-
-            context.sold_plants = False
-        # only draw the new plants that are purchaced
-        elif context.bought_plants:
-            for crop in context.crops:
-                #iterate over the newly purchaced crop cords
-                for i in range(len(crop.spriteCoords) - crop.to_show, len(crop.spriteCoords)):
-                    coords = crop.spriteCoords[i]
-                    img = pygame.image.load(crop.spriteFile).convert_alpha()
-                    img_rect = img.get_rect()
-                    img_rect.centerx = coords[0]
-                    img_rect.centery = coords[1]
-                    screen.blit(img, img_rect)
-                crop.to_show = 0
-            
-            context.bought_plants = False
-            
-
-        
-        img_rect = drawIceCream(context)
+        field = pygame.Rect(0, 100, left_pannel_width, infoObject.current_h)
 
         
 
-        if context.first_person == "To-Show":
-            drawPopup("Congratulations", "You have produced enough food to support a colony! People will begin arriving and eating your food, let's hope you don't get over-crowded...")
-            rect = drawText("Got it!", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
-            context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'exit')
-            
-        if context.population > 500 and context.answer == 'Not-asked':
-            context.answer = 'Asked'
-        if context.population > 500 and context.answer == 'Asked':
-            context.answer = 'Asked'
-            drawPopup("Congratulations", "You have been offered the position of 'Head Farmer' at a new colony, will you leave your colony and start a new one?")
-            rect = drawText("Stay and Farm", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
-            context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'stay')
-            rect = drawText("Start a New Colony", 'black', None, infoObject.current_w - 600, infoObject.current_h /3 + 50, 20)
-            context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'leave')
+        # Discern good coords and dead zone
+        context.win_x1 = 0
+        context.win_x2 = infoObject.current_w - right_pannel_width - 50
+        context.win_y1 = 110
+        context.win_y2 = infoObject.current_h - 25
 
-        # flip() the display to put your work on screen
-        pygame.display.flip()
+        context.dead_x1 = img_rect.topleft[0]
+        context.dead_x2 = context.dead_x1 + img_rect.width
+        context.dead_y1 = img_rect.topleft[1]
+        context.dead_y2 = context.dead_y1 + img_rect.height
+    # Draw the plants! (must be done for all plants if sold)
+    if context.sold_plants:
+        img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert_alpha()
+        img = pygame.transform.scale(img, (left_pannel_width,infoObject.current_h - 10))
+
+        #pygame.draw.rect(screen, pygame.Color(255,255,255), field)
+        screen.blit(img, (0,100))
+
+
+        #screen.blit(img, img_rect)
+        for crop in context.crops:
+            for coords in crop.spriteCoords:
+                img = pygame.image.load(crop.spriteFile).convert_alpha()
+                img_rect = img.get_rect()
+                img_rect.centerx = coords[0]
+                img_rect.centery = coords[1]
+                screen.blit(img, img_rect)
+
+        context.sold_plants = False
+    # only draw the new plants that are purchaced
+    elif context.bought_plants:
+        for crop in context.crops:
+            #iterate over the newly purchaced crop cords
+            for i in range(len(crop.spriteCoords) - crop.to_show, len(crop.spriteCoords)):
+                coords = crop.spriteCoords[i]
+                img = pygame.image.load(crop.spriteFile).convert_alpha()
+                img_rect = img.get_rect()
+                img_rect.centerx = coords[0]
+                img_rect.centery = coords[1]
+                screen.blit(img, img_rect)
+            crop.to_show = 0
+        
+        context.bought_plants = False
+        
+
+    
+    img_rect = drawIceCream(context)
+
+    
+
+    if context.first_person == "To-Show":
+        drawPopup("Congratulations", "You have produced enough food to support a colony! People will begin arriving and eating your food, let's hope you don't get over-crowded...")
+        rect = drawText("Got it!", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
+        context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'exit')
+        
+    if context.population > 500 and context.answer == 'Not-asked':
+        context.answer = 'Asked'
+    if context.population > 500 and context.answer == 'Asked':
+        context.answer = 'Asked'
+        drawPopup("Congratulations", "You have been offered the position of 'Head Farmer' at a new colony, will you leave your colony and start a new one?")
+        rect = drawText("Stay and Farm", 'black', None, infoObject.current_w - 300, infoObject.current_h /3 + 50, 20)
+        context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'stay')
+        rect = drawText("Start a New Colony", 'black', None, infoObject.current_w - 600, infoObject.current_h /3 + 50, 20)
+        context.append_click_region(rect.topleft[0], rect.topleft[1], rect.width, rect.height, 'leave')
+
+    # flip() the display to put your work on screen
+    pygame.display.flip()
  
 if __name__ == '__main__':
 
@@ -410,6 +406,6 @@ if __name__ == '__main__':
         elif context.gameState == GameState.GAME:
             show_game_screen()
        
-        clock.tick(30)  # limits FPS to 30
+        clock.tick(GameInfo.TARGET_FRAME_RATE)  # limits FPS to target frame rate
 
     windowClose()
