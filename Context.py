@@ -170,6 +170,8 @@ class Context:
     white = (255, 255, 255)
     black = (0, 0, 0)
 
+
+
     #instance variable
     def __init__(self):
         self.gameState = GameState.TITLE
@@ -240,9 +242,13 @@ class Context:
         # controls toggle gui
         self.portfolioMode = True
 
+        self.updated_plants = True
+
 
         # plant sprites and stuff
         self.coords = []
+
+        
 
     def update_crops(self):
             self.crops = []
@@ -361,6 +367,7 @@ class Context:
                     if crop.sellPlant():
                         self.food += crop.sellValue
                         self.totalfood += crop.sellValue
+                    self.updated_plants = True
                     
 
                 elif command[0] == "buy":
@@ -368,6 +375,7 @@ class Context:
                     if self.food >= crop.buyValue:
                         crop.addPlant(self.win_x1, self.win_y1, self.win_x2, self.win_y2, self.dead_x1, self.dead_y1, self.dead_x2, self.dead_y2)
                         self.food -= crop.buyValue
+                    self.updated_plants = True
 
                 elif command[0]  == "click":
                     self.food += 1

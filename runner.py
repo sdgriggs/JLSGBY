@@ -221,17 +221,12 @@ def show_game_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 context._handle_click_event(event, pygame.mouse.get_pos())
         # fill the screen with a color to wipe away anything from last frame
-        screen.fill(pygame.Color(240,231,231))
+        #screen.fill(pygame.Color(240,231,231))
 
         # RENDER YOUR GAME HERE
 
         #Left information pannel
-        left_pannel_width = infoObject.current_w /4 * 3
-        #pygame.draw.rect(screen, pygame.Color(193,168,14), pygame.Rect(0, 0, left_pannel_width, infoObject.current_h))
-        img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert()
-        img_rect = img.get_rect()
-
-        screen.blit(img, img_rect)
+        
 
         #Right information pannel
         right_pannel_width = infoObject.current_w /4 
@@ -241,13 +236,7 @@ def show_game_screen():
         context.init_click_regions()
 
         # Make our toggle buttons
-        img = pygame.image.load("assets\\ice-cream.png").convert_alpha()
 
-        img = pygame.transform.scale(img, (200,300))
-        img_rect = img.get_rect()
-        img_rect.topleft = ((infoObject.current_w / 4 * 3 - 220 , infoObject.current_h - 380))
-        screen.blit(img, img_rect)
-        context.append_click_region(img_rect.x, img_rect.y, img_rect.width, img_rect.height, "click")
 
         # Plant Portfolio Button
         pbRect = drawText("  Plant Portfolio  ", 'black', 'white', infoObject.current_w - right_pannel_width + 20, 110, 20)
@@ -285,16 +274,7 @@ def show_game_screen():
             drawText(f"Net Food Per Hour:    {context.get_net():.2f}", 'black', None, graph_x, 660, 25)
 
 
-        # Discern good coords and dead zone
-        context.win_x1 = 0
-        context.win_x2 = infoObject.current_w - right_pannel_width
-        context.win_y1 = 110
-        context.win_y2 = infoObject.current_h
 
-        context.dead_x1 = img_rect.topleft[0]
-        context.dead_x2 = context.dead_x1 + img_rect.width
-        context.dead_y1 = img_rect.topleft[1]
-        context.dead_y2 = context.dead_y1 + img_rect.height
 
         pygame.draw.rect(screen, "brown", pygame.Rect(0,0,infoObject.current_w, 100))
 
@@ -315,13 +295,45 @@ def show_game_screen():
         drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
 
         # Draw the plants!
-        for crop in context.crops:
-            for coords in crop.spriteCoords:
-                img = pygame.image.load(crop.spriteFile).convert_alpha()
-                img_rect = img.get_rect()
-                img_rect.centerx = coords[0]
-                img_rect.centery = coords[1]
-                screen.blit(img, img_rect)
+        if context.updated_plants:
+            left_pannel_width = infoObject.current_w /4 * 3
+            field = pygame.Rect(0, 100, left_pannel_width, infoObject.current_h)
+            img = pygame.image.load("assets\\gauthier-bassee-curiosity-image-site-22.png").convert_alpha()
+            img = pygame.transform.scale(img, (left_pannel_width,infoObject.current_h - 10))
+
+            #pygame.draw.rect(screen, pygame.Color(255,255,255), field)
+            screen.blit(img, (0,100))
+            img = pygame.image.load("assets\\ice-cream.png").convert_alpha()
+
+            img = pygame.transform.scale(img, (200,300))
+            img_rect = img.get_rect()
+            img_rect.topleft = ((infoObject.current_w / 4 * 3 - 220 , infoObject.current_h - 380))
+            screen.blit(img, img_rect)
+            context.append_click_region(img_rect.x, img_rect.y, img_rect.width, img_rect.height, "click")
+
+
+            # Discern good coords and dead zone
+            context.win_x1 = 0
+            context.win_x2 = infoObject.current_w - right_pannel_width
+            context.win_y1 = 110
+            context.win_y2 = infoObject.current_h
+
+            context.dead_x1 = img_rect.topleft[0]
+            context.dead_x2 = context.dead_x1 + img_rect.width
+            context.dead_y1 = img_rect.topleft[1]
+            context.dead_y2 = context.dead_y1 + img_rect.height
+
+            #screen.blit(img, img_rect)
+            for crop in context.crops:
+                for coords in crop.spriteCoords:
+                    img = pygame.image.load(crop.spriteFile).convert_alpha()
+                    img_rect = img.get_rect()
+                    img_rect.centerx = coords[0]
+                    img_rect.centery = coords[1]
+                    screen.blit(img, img_rect)
+
+            print("Logged")
+            context.updated_plants = False
     
 
         

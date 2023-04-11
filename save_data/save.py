@@ -17,5 +17,6 @@ def getSaveData():
 
 def saveGame(context):
     fp = open(SAVE_DATA_FP, "wb")
+    context.updated_plants = True
     gerald = pickle.dump(context, fp)
     fp.close()
