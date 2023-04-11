@@ -357,7 +357,7 @@ class Context:
     def _handle_click_event(self, event, mouse):
         
         for region in self.click_regions:
-
+            
             if region['x'] <= mouse[0] <= region['x'] + region['width'] and region['y'] <= mouse[1] <= region['y'] + region['height']:
 
                 command = region['desc'].split('-')
@@ -378,6 +378,7 @@ class Context:
                     self.updated_plants = True
 
                 elif command[0]  == "click":
+                    
                     self.food += 1
                     self.totalfood += 1
 
@@ -404,6 +405,7 @@ class Context:
                     self.food = 0
                     self.first_person = "Insufficent-Food"
                     self.answer = "Not-asked"
+                print("Clicked")
 
     def init_click_regions(self):
         self.click_regions = []

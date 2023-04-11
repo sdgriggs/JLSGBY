@@ -113,6 +113,16 @@ def drawPopup(title, message):
     drawText(title, 'black', None, 110, 125, 40)
     drawText(message, 'black', None, 110, 175, 20)
 
+def drawIceCream(context):
+    img = pygame.image.load("assets\\ice-cream.png").convert_alpha()
+
+    img = pygame.transform.scale(img, (200,300))
+    img_rect = img.get_rect()
+    img_rect.topleft = ((infoObject.current_w / 4 * 3 - 220 , infoObject.current_h - 380))
+    screen.blit(img, img_rect)
+    context.append_click_region(img_rect.x, img_rect.y, img_rect.width, img_rect.height, "click")
+
+    return img_rect
 
 def show_title_screen():
 
@@ -294,6 +304,8 @@ def show_game_screen():
         drawText(f"Sunset: {context.get_sunset()}", Context.white, bgc, 300, 65, 20)
         drawText(context.get_time_string(), Context.white, bgc, 25, 40, 20)
 
+        img_rect = drawIceCream(context)
+
         # Draw the plants!
         if context.updated_plants:
             left_pannel_width = infoObject.current_w /4 * 3
@@ -303,20 +315,14 @@ def show_game_screen():
 
             #pygame.draw.rect(screen, pygame.Color(255,255,255), field)
             screen.blit(img, (0,100))
-            img = pygame.image.load("assets\\ice-cream.png").convert_alpha()
 
-            img = pygame.transform.scale(img, (200,300))
-            img_rect = img.get_rect()
-            img_rect.topleft = ((infoObject.current_w / 4 * 3 - 220 , infoObject.current_h - 380))
-            screen.blit(img, img_rect)
-            context.append_click_region(img_rect.x, img_rect.y, img_rect.width, img_rect.height, "click")
-
+            print(context.click_regions)
 
             # Discern good coords and dead zone
             context.win_x1 = 0
-            context.win_x2 = infoObject.current_w - right_pannel_width
+            context.win_x2 = infoObject.current_w - right_pannel_width - 50
             context.win_y1 = 110
-            context.win_y2 = infoObject.current_h
+            context.win_y2 = infoObject.current_h - 25
 
             context.dead_x1 = img_rect.topleft[0]
             context.dead_x2 = context.dead_x1 + img_rect.width
@@ -334,7 +340,7 @@ def show_game_screen():
 
             print("Logged")
             context.updated_plants = False
-    
+        img_rect = drawIceCream(context)
 
         
 
