@@ -12,10 +12,8 @@ def getSaveData():
     except Exception:
         return None
 
-
-    print("ni")
-
 def saveGame(context):
     fp = open(SAVE_DATA_FP, "wb")
-    gerald = pickle.dump(context, fp)
+    context.sold_plants = True
+    pickle.dump(context, fp)
     fp.close()
